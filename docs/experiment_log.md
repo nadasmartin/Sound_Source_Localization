@@ -4315,3 +4315,47 @@ The project is not under git and there is no copy elsewhere.
 **Two observations the page makes visible** (for the conclusions):
 1. **Geometry explains the position error.** Measured 3D error vs predicted geometric sensitivity falls between the 1 µs and 3 µs effective timing-noise lines for nearly all points of all three arrays.
 2. **The errors lie along the ray.** The inspector's along-the-ray view and the side map show the measured positions on the true direction but too close. Every array gets the direction and loses the distance.
+
+## 2026-11-18 19:00 — System identification and 3-page report
+
+**System identification (new `host/identify_system.py`).**
+- Command (in `host/`): `python identify_system.py` (about 10 s). Numbers are written to `host/bench_results/series/distance_v2/figures/identification.json`.
+- Measurement model: t_i = |s − m_i|/c + δ_i + e_i. Fitted by least squares on the point-mean pair delays of accepted chirps at z ≥ 50 cm, per array. Nested models:
+  - M0 nominal;
+  - M1 + rotation;
+  - M2 + c;
+  - M3 + per-mic delays;
+  - M5 per-mic delays + array-centre offset;
+  - M4 per-mic delays + each mic's x/y, with c fixed. A first M4 that also freed c was degenerate (c and array scale trade off; it gave c = 364–541 m/s) and was dropped.
+- Validation: fit on z = 50/130, test on z = 90/170. The test 3D error is reported on diagonal and in-between points only.
+- Results:
+
+  | | 30 cm | 20 cm | 10 cm |
+  |---|---|---|---|
+  | per-chirp jitter, robust (rms) | 0.69 µs (0.83) | 0.64 µs (0.76) | 0.64 µs (4.40, outlier chirps) |
+  | systematic residual M0 | 5.71 µs | 4.69 µs | 5.18 µs |
+  | M1 rotation | −0.16° | −0.08° | −0.18° |
+  | M2 c [m/s] | 343.3 | 345.9 | 351.9 |
+  | M5 residual / array offset | 4.79 µs / (−5.6, −1.6) mm | 3.34 µs / (−12.8, −2.1) mm | 2.26 µs / (−7.9, −11.7) mm |
+  | held-out 3D error, M0 → M5 (median) | 16.2 → 11.8 cm | 57.2 → 25.8 cm | 81.9 → 79.1 cm |
+  | effective timing error σ = 3D error / G | 1.22 µs | 2.03 µs | 1.04 µs |
+  | median measured/true distance | 0.93 | 0.71 | 0.41 |
+
+- Reading:
+  - Electronics and DSP are consistent: about 0.65 µs jitter for every layout.
+  - Global geometry is right (rotation ≈ 0°, c within 1–2 %).
+  - The 5-parameter calibration explains part of the systematic residual and carries over to unseen heights for 30 and 20 cm.
+  - The fitted per-mic delays differ between layouts, so they absorb placement, not hardware.
+  - The remaining 2–4.5 µs is position-dependent. Ground-truth placement alone (0.5 cm at 1 m → 4.4 µs across 30 cm) can explain it; echoes and speaker directivity are the other candidates.
+  - Error model: 3D error ≈ G(s, side) × σ, σ ≈ 1–2 µs.
+
+**Report:** `docs/report/report.pdf` (3 pages, A4), source `docs/report/report.html`, figures `docs/report/fig_*.svg`.
+- Figures are made by `host/report_figures.py` (in `host/`: `python report_figures.py`, after `identify_system.py`).
+- PDF: `google-chrome --headless=new --no-pdf-header-footer --print-to-pdf=report.pdf report.html` (in `docs/report/`).
+- Content:
+  - summary;
+  - experiment with Table 1 (error, direction, success per height band);
+  - findings: direction vs distance, shortening along the ray, blind plane, floor echo, steep sources, failures set by the place, the rotation error caught by the data;
+  - the identification procedure and its results;
+  - consequences.
+- Additional numbers, computed with the analysis page's own logic: capability classes at 20 cm / 3° / 50 % are 21/12/26, 8/30/22 and 0/28/32. Direction from all detected chirps at failing points: 2.5° / 4.0° / 7.8°.
