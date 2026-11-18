@@ -1,0 +1,6 @@
+{
+  "_doc": "Points left out of the analysis (analyze_series.py). The raw files stay on disk. Each entry: series, point, reason, who decided, when.",
+  "excluded": [
+    {"series": "a30", "point": "z090-M4", "reason": "phone placed at the wrong position (user confirmed); 18 deg direction error vs ~2 deg at the neighbours", "decided_by": "user", "date": "2026-11-18"}
+  ]
+}

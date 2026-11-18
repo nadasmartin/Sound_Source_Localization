@@ -1,0 +1,931 @@
+plan distance_v2, series a30: 80 of 80 points to measure; signal chirp_3-12k_50ms, 20 x every 0.5 s, gain 0 dB, channel left
+mic square 30 cm, rotated +2.13 deg: Mic1 (-15.5,+14.4)  Mic2 (+14.4,+15.5)  Mic3 (+15.5,-14.4)  Mic4 (-14.4,-15.5)
+ESP32 firmware 9587b9dbc09c = the firmware sources on disk
+ESP32: 43940 Hz/mic, mic delays [0.0, 0.0, 0.0, 0.0] us, 21 C -> c = 344.0 m/s
+
+Open on the phone (same Wi-Fi):  http://192.168.1.76:8765/
+waiting for the phone to tap 'Start audio' ...
+phone ready (192.168.1.97)
+
+next: [1/80] y axis 50 cm, height 10 cm (x 0   y 50   z 10 cm) - waiting for the phone button
+
+[1/80] z010-Y050  y axis 50 cm, height 10 cm
+true position (0.0, 50.0, 10.0) cm: distance 51.0 cm, azimuth 90.0 deg, elevation 11.3 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 41.2  Mic3 824.4  Mic4 848.5
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     32.7     0.64   597.4   597.9    11.0    620  -30.7     0
+
+next: [2/80] y axis 100 cm, height 10 cm (x 0   y 100   z 10 cm) - waiting for the phone button
+
+[1/80] z010-Y050  y axis 50 cm, height 10 cm  (REDO)
+true position (0.0, 50.0, 10.0) cm: distance 51.0 cm, azimuth 90.0 deg, elevation 11.3 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 41.2  Mic3 824.4  Mic4 848.5
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     32.3     0.40   597.2   597.7    11.0    280  -37.5     0
+
+next: [2/80] y axis 100 cm, height 10 cm (x 0   y 100   z 10 cm) - waiting for the phone button
+
+[1/80] z010-Y050  y axis 50 cm, height 10 cm  (REDO)
+true position (0.0, 50.0, 10.0) cm: distance 51.0 cm, azimuth 90.0 deg, elevation 11.3 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 41.2  Mic3 824.4  Mic4 848.5
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     33.3     0.39   597.5   598.1    11.0    429  -34.4     0
+
+next: [2/80] y axis 100 cm, height 10 cm (x 0   y 100   z 10 cm) - waiting for the phone button
+
+[1/80] z010-Y050  y axis 50 cm, height 10 cm  (REDO)
+true position (0.0, 50.0, 10.0) cm: distance 51.0 cm, azimuth 90.0 deg, elevation 11.3 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 41.2  Mic3 824.4  Mic4 848.5
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     33.2     0.28   597.4   598.0    11.1    476  -34.2     0
+
+next: [2/80] y axis 100 cm, height 10 cm (x 0   y 100   z 10 cm) - waiting for the phone button
+
+[2/80] z010-Y100  y axis 100 cm, height 10 cm
+true position (0.0, 100.0, 10.0) cm: distance 100.5 cm, azimuth 90.0 deg, elevation 5.7 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 37.3  Mic3 862.1  Mic4 889.9
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     31.2     0.60   523.3   523.9    10.0    234  -38.5     0
+
+next: [3/80] y axis 150 cm, height 10 cm (x 0   y 150   z 10 cm) - waiting for the phone button
+
+[3/80] z010-Y150  y axis 150 cm, height 10 cm
+true position (0.0, 150.0, 10.0) cm: distance 150.3 cm, azimuth 90.0 deg, elevation 3.8 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 35.7  Mic3 868.3  Mic4 897.6
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     29.1     0.78   462.6   463.6     7.6    220  -39.0     0
+
+next: [4/80] y axis 200 cm, height 10 cm (x 0   y 200   z 10 cm) - waiting for the phone button
+
+[4/80] z010-Y200  y axis 200 cm, height 10 cm
+true position (0.0, 200.0, 10.0) cm: distance 200.2 cm, azimuth 90.0 deg, elevation 2.9 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 34.9  Mic3 870.3  Mic4 900.4
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     28.7     0.73   409.5   410.6     6.9    155  -40.5     0
+
+next: [5/80] diagonal 50 cm, height 10 cm (x 35.4   y 35.4   z 10 cm) - waiting for the phone button
+
+[5/80] z010-D050  diagonal 50 cm, height 10 cm
+true position (35.4, 35.4, 10.0) cm: distance 51.1 cm, azimuth 45.0 deg, elevation 11.3 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 697.8  Mic1 739.3  Mic4 1203.6
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     30.9     0.38     3.0     3.1     4.2    377  -33.0     0
+
+next: [6/80] diagonal 100 cm, height 10 cm (x 70.7   y 70.7   z 10 cm) - waiting for the phone button
+
+[6/80] z010-D100  diagonal 100 cm, height 10 cm
+true position (70.7, 70.7, 10.0) cm: distance 100.5 cm, azimuth 45.0 deg, elevation 5.7 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 654.2  Mic1 698.8  Mic4 1225.9
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     32.0     0.84    19.4    20.3     6.0    179  -37.9     0
+
+next: [7/80] diagonal 150 cm, height 10 cm (x 106.1   y 106.1   z 10 cm) - waiting for the phone button
+
+[7/80] z010-D150  diagonal 150 cm, height 10 cm
+true position (106.1, 106.1, 10.0) cm: distance 150.4 cm, azimuth 45.0 deg, elevation 3.8 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 635.1  Mic1 680.4  Mic4 1229.6
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     28.4     0.83    18.9    20.0     6.5    141  -39.3     0
+
+next: [8/80] diagonal 200 cm, height 10 cm (x 141.4   y 141.4   z 10 cm) - waiting for the phone button
+
+[8/80] z010-D200  diagonal 200 cm, height 10 cm
+true position (141.4, 141.4, 10.0) cm: distance 200.2 cm, azimuth 45.0 deg, elevation 2.9 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 625.0  Mic1 670.6  Mic4 1230.8
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    95     0     26.7     0.99    21.7    23.3     6.1    103  -39.8     0
+
+next: [9/80] in-between 1, height 10 cm (x 18   y 46.5   z 10 cm) - waiting for the phone button
+
+[9/80] z010-M1  in-between 1, height 10 cm
+true position (18.0, 46.5, 10.0) cm: distance 50.9 cm, azimuth 68.8 deg, elevation 11.3 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 428.8  Mic3 845.1  Mic4 1104.6
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     12.6     0.54     3.7     3.8     6.8    257  -35.0     0
+
+next: [10/80] in-between 2, height 10 cm (x 33.3   y 78.5   z 10 cm) - waiting for the phone button
+
+[10/80] z010-M2  in-between 2, height 10 cm
+true position (33.3, 78.5, 10.0) cm: distance 85.9 cm, azimuth 67.0 deg, elevation 6.7 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 427.5  Mic3 833.2  Mic4 1147.1
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     25.4     0.67    11.4    12.2     5.4    130  -38.2     0
+
+next: [11/80] in-between 3, height 10 cm (x 31   y 126   z 10 cm) - waiting for the phone button
+
+[11/80] z010-M3  in-between 3, height 10 cm
+true position (31.0, 126.0, 10.0) cm: distance 130.1 cm, azimuth 76.2 deg, elevation 4.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 266.4  Mic3 857.4  Mic4 1071.4
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    95     0     26.4     0.70    23.8    25.9     7.8    131  -39.4     0
+
+next: [12/80] in-between 4, height 10 cm (x 78.5   y 117.8   z 10 cm) - waiting for the phone button
+
+[12/80] z010-M4  in-between 4, height 10 cm
+true position (78.5, 117.8, 10.0) cm: distance 141.9 cm, azimuth 56.3 deg, elevation 4.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 553.1  Mic3 747.4  Mic4 1214.0
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     25.6     0.77    17.6    18.2     6.1    110  -38.7     0
+
+next: [13/80] in-between 5, height 10 cm (x 44   y 162   z 10 cm) - waiting for the phone button
+
+[13/80] z010-M5  in-between 5, height 10 cm
+true position (44.0, 162.0, 10.0) cm: distance 168.2 cm, azimuth 74.8 deg, elevation 3.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 282.0  Mic3 850.2  Mic4 1088.3
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     27.0     0.69    27.5    31.7     6.9    102  -39.8     0
+
+next: [14/80] in-between 6, height 10 cm (x 110   y 158.5   z 10 cm) - waiting for the phone button
+
+[14/80] z010-M6  in-between 6, height 10 cm
+true position (110.0, 158.5, 10.0) cm: distance 193.2 cm, azimuth 55.2 deg, elevation 3.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 555.5  Mic3 728.2  Mic4 1219.1
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     27.7     0.85    19.7    21.2     5.9     88  -39.8     0
+
+next: [15/80] in-between 7, height 10 cm (x 41.8   y 206   z 10 cm) - waiting for the phone button
+
+[15/80] z010-M7  in-between 7, height 10 cm
+true position (41.8, 206.0, 10.0) cm: distance 210.4 cm, azimuth 78.5 deg, elevation 2.7 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 219.4  Mic3 858.8  Mic4 1050.0
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     27.1     0.83    42.4    52.1     6.8    116  -40.3     0
+
+next: [16/80] in-between 8, height 10 cm (x 125   y 214   z 10 cm) - waiting for the phone button
+
+[16/80] z010-M8  in-between 8, height 10 cm
+true position (125.0, 214.0, 10.0) cm: distance 248.0 cm, azimuth 59.7 deg, elevation 2.3 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 491.3  Mic3 758.7  Mic4 1202.4
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    55     0     26.7     1.61    22.1    30.6     4.9     72  -40.4     0
+
+next: [17/80] y axis 50 cm, height 50 cm (x 0   y 50   z 50 cm) - waiting for the phone button
+
+[17/80] z050-Y050  y axis 50 cm, height 50 cm
+true position (0.0, 50.0, 50.0) cm: distance 70.7 cm, azimuth 90.0 deg, elevation 45.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 25.8  Mic3 599.2  Mic4 618.6
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     20.6     0.31   740.9   744.5     2.9    474  -33.7     0
+
+next: [18/80] y axis 100 cm, height 50 cm (x 0   y 100   z 50 cm) - waiting for the phone button
+
+[18/80] z050-Y100  y axis 100 cm, height 50 cm
+true position (0.0, 100.0, 50.0) cm: distance 111.8 cm, azimuth 90.0 deg, elevation 26.6 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 32.5  Mic3 774.5  Mic4 800.1
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     24.1     0.41    85.2   568.4     2.4    271  -37.2     0
+
+next: [19/80] y axis 150 cm, height 50 cm (x 0   y 150   z 50 cm) - waiting for the phone button
+
+[19/80] z050-Y150  y axis 150 cm, height 50 cm
+true position (0.0, 150.0, 50.0) cm: distance 158.1 cm, azimuth 90.0 deg, elevation 18.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 33.6  Mic3 825.4  Mic4 853.5
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     25.3     0.54   264.9   475.1     2.3    162  -40.2     0
+
+next: [20/80] y axis 200 cm, height 50 cm (x 0   y 200   z 50 cm) - waiting for the phone button
+
+[20/80] z050-Y200  y axis 200 cm, height 50 cm
+true position (0.0, 200.0, 50.0) cm: distance 206.2 cm, azimuth 90.0 deg, elevation 14.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 33.7  Mic3 845.3  Mic4 874.6
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    80     1     26.5     0.71   414.0   415.1     2.2     83  -41.4     0
+
+next: [21/80] diagonal 50 cm, height 50 cm (x 35.4   y 35.4   z 50 cm) - waiting for the phone button
+
+[21/80] z050-D050  diagonal 50 cm, height 50 cm
+true position (35.4, 35.4, 50.0) cm: distance 70.8 cm, azimuth 45.0 deg, elevation 45.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 453.2  Mic1 484.3  Mic4 852.2
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     24.9     0.39     4.6     5.1     2.7    394  -34.0     0
+
+next: [22/80] diagonal 100 cm, height 50 cm (x 70.7   y 70.7   z 50 cm) - waiting for the phone button
+
+[22/80] z050-D100  diagonal 100 cm, height 50 cm
+true position (70.7, 70.7, 50.0) cm: distance 111.8 cm, azimuth 45.0 deg, elevation 26.6 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 574.8  Mic1 615.1  Mic4 1098.2
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     1     27.9     0.57     4.5     4.8     2.3    196  -37.7     0
+
+next: [23/80] diagonal 150 cm, height 50 cm (x 106.1   y 106.1   z 50 cm) - waiting for the phone button
+
+[23/80] z050-D150  diagonal 150 cm, height 50 cm
+true position (106.1, 106.1, 50.0) cm: distance 158.2 cm, azimuth 45.0 deg, elevation 18.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 599.4  Mic1 642.5  Mic4 1168.1
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     24.6     0.60    24.7    27.5     2.1     92  -39.5     0
+
+next: [24/80] diagonal 200 cm, height 50 cm (x 141.4   y 141.4   z 50 cm) - waiting for the phone button
+
+[24/80] z050-D200  diagonal 200 cm, height 50 cm
+true position (141.4, 141.4, 50.0) cm: distance 206.1 cm, azimuth 45.0 deg, elevation 14.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 605.2  Mic1 649.4  Mic4 1195.2
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100     5     0     25.4     0.00    56.1    56.1     2.1     63  -40.2     0
+
+next: [25/80] in-between 1, height 50 cm (x 18   y 46.5   z 50 cm) - waiting for the phone button
+
+[25/80] z050-M1  in-between 1, height 50 cm
+true position (18.0, 46.5, 50.0) cm: distance 70.6 cm, azimuth 68.8 deg, elevation 45.1 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 270.5  Mic3 579.8  Mic4 788.3
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0      9.1     0.34     3.1     3.8     1.0    236  -33.5     0
+
+next: [26/80] in-between 2, height 50 cm (x 33.3   y 78.5   z 50 cm) - waiting for the phone button
+
+[26/80] z050-M2  in-between 2, height 50 cm
+true position (33.3, 78.5, 50.0) cm: distance 98.8 cm, azimuth 67.0 deg, elevation 30.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 355.8  Mic3 710.2  Mic4 992.4
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     23.7     0.47     3.6     4.4     1.9    142  -36.3     0
+
+next: [27/80] in-between 3, height 50 cm (x 31   y 126   z 50 cm) - waiting for the phone button
+
+[27/80] z050-M3  in-between 3, height 50 cm
+true position (31.0, 126.0, 50.0) cm: distance 139.1 cm, azimuth 76.2 deg, elevation 21.1 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 245.6  Mic3 799.3  Mic4 1002.1
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     20.6     0.52     7.0    10.0     1.8    129  -38.7     0
+
+next: [28/80] in-between 4, height 50 cm (x 78.5   y 117.8   z 50 cm) - waiting for the phone button
+
+[28/80] z050-M4  in-between 4, height 50 cm
+true position (78.5, 117.8, 50.0) cm: distance 150.1 cm, azimuth 56.3 deg, elevation 19.5 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 517.7  Mic3 701.6  Mic4 1146.3
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     23.7     0.66    13.1    15.6     1.9    100  -39.5     0
+
+next: [29/80] in-between 5, height 50 cm (x 44   y 162   z 50 cm) - waiting for the phone button
+
+[29/80] z050-M5  in-between 5, height 50 cm
+true position (44.0, 162.0, 50.0) cm: distance 175.2 cm, azimuth 74.8 deg, elevation 16.6 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 268.8  Mic3 814.5  Mic4 1044.5
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     22.5     0.66    30.7    39.0     1.7     83  -39.5     0
+
+next: [30/80] in-between 6, height 50 cm (x 110   y 158.5   z 50 cm) - waiting for the phone button
+
+[30/80] z050-M6  in-between 6, height 50 cm
+true position (110.0, 158.5, 50.0) cm: distance 199.3 cm, azimuth 55.2 deg, elevation 14.5 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 536.3  Mic3 703.8  Mic4 1181.3
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100     0     0                                               77  -40.0     0
+
+next: [31/80] in-between 7, height 50 cm (x 41.8   y 206   z 50 cm) - waiting for the phone button
+
+[31/80] z050-M7  in-between 7, height 50 cm
+true position (41.8, 206.0, 50.0) cm: distance 216.1 cm, azimuth 78.5 deg, elevation 13.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 212.9  Mic3 835.7  Mic4 1022.5
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100     0     0                                               46  -41.0     0
+
+next: [32/80] in-between 8, height 50 cm (x 125   y 214   z 50 cm) - waiting for the phone button
+
+[32/80] z050-M8  in-between 8, height 50 cm
+true position (125.0, 214.0, 50.0) cm: distance 252.8 cm, azimuth 59.7 deg, elevation 11.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 481.0  Mic3 743.4  Mic4 1179.5
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100     0     0                                               40  -40.6     0
+
+next: [33/80] y axis 50 cm, height 90 cm (x 0   y 50   z 90 cm) - waiting for the phone button
+
+[33/80] z090-Y050  y axis 50 cm, height 90 cm
+true position (0.0, 50.0, 90.0) cm: distance 103.0 cm, azimuth 90.0 deg, elevation 60.9 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 16.6  Mic3 416.5  Mic4 431.0
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     1     15.8     0.48   574.3   576.9     1.5    274  -36.6     0
+
+next: [34/80] y axis 100 cm, height 90 cm (x 0   y 100   z 90 cm) - waiting for the phone button
+
+[34/80] z090-Y100  y axis 100 cm, height 90 cm
+true position (0.0, 100.0, 90.0) cm: distance 134.5 cm, azimuth 90.0 deg, elevation 42.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 26.0  Mic3 643.9  Mic4 666.0
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     1     20.3     0.43   642.5   678.0     1.7    229  -38.0     0
+
+next: [35/80] y axis 150 cm, height 90 cm (x 0   y 150   z 90 cm) - waiting for the phone button
+
+[35/80] z090-Y150  y axis 150 cm, height 90 cm
+true position (0.0, 150.0, 90.0) cm: distance 174.9 cm, azimuth 90.0 deg, elevation 31.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 29.8  Mic3 745.8  Mic4 771.6
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     23.7     0.78   522.7   524.6     1.9    167  -39.5     0
+
+next: [36/80] y axis 200 cm, height 90 cm (x 0   y 200   z 90 cm) - waiting for the phone button
+
+[35/80] z090-Y150  y axis 150 cm, height 90 cm  (REDO)
+true position (0.0, 150.0, 90.0) cm: distance 174.9 cm, azimuth 90.0 deg, elevation 31.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 29.8  Mic3 745.8  Mic4 771.6
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     23.4     0.62   522.2   525.5     1.9    163  -39.4     0
+
+next: [36/80] y axis 200 cm, height 90 cm (x 0   y 200   z 90 cm) - waiting for the phone button
+
+[35/80] z090-Y150  y axis 150 cm, height 90 cm  (REDO)
+true position (0.0, 150.0, 90.0) cm: distance 174.9 cm, azimuth 90.0 deg, elevation 31.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 29.8  Mic3 745.8  Mic4 771.6
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     23.3     0.45   505.7   524.7     1.9    177  -39.3     0
+
+next: [36/80] y axis 200 cm, height 90 cm (x 0   y 200   z 90 cm) - waiting for the phone button
+
+[35/80] z090-Y150  y axis 150 cm, height 90 cm  (REDO)
+true position (0.0, 150.0, 90.0) cm: distance 174.9 cm, azimuth 90.0 deg, elevation 31.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 29.8  Mic3 745.8  Mic4 771.6
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     23.4     0.57   522.4   525.3     1.9    178  -39.2     0
+
+next: [36/80] y axis 200 cm, height 90 cm (x 0   y 200   z 90 cm) - waiting for the phone button
+
+[35/80] z090-Y150  y axis 150 cm, height 90 cm  (REDO)
+true position (0.0, 150.0, 90.0) cm: distance 174.9 cm, azimuth 90.0 deg, elevation 31.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 29.8  Mic3 745.8  Mic4 771.6
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     23.5     0.59   523.0   525.6     1.9    179  -39.2     0
+
+next: [36/80] y axis 200 cm, height 90 cm (x 0   y 200   z 90 cm) - waiting for the phone button
+
+[36/80] z090-Y200  y axis 200 cm, height 90 cm
+true position (0.0, 200.0, 90.0) cm: distance 219.3 cm, azimuth 90.0 deg, elevation 24.2 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 31.4  Mic3 794.3  Mic4 822.1
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     1     24.5     0.78   377.4   441.0     2.0    113  -40.3     0
+
+next: [37/80] diagonal 50 cm, height 90 cm (x 35.4   y 35.4   z 90 cm) - waiting for the phone button
+
+[37/80] z090-D050  diagonal 50 cm, height 90 cm
+true position (35.4, 35.4, 90.0) cm: distance 103.0 cm, azimuth 45.0 deg, elevation 60.9 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 298.1  Mic1 319.9  Mic4 589.5
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     2     20.5     0.46    18.0    19.5     1.8    240  -36.0     0
+
+next: [38/80] diagonal 100 cm, height 90 cm (x 70.7   y 70.7   z 90 cm) - waiting for the phone button
+
+[38/80] z090-D100  diagonal 100 cm, height 90 cm
+true position (70.7, 70.7, 90.0) cm: distance 134.5 cm, azimuth 45.0 deg, elevation 42.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 464.8  Mic1 498.5  Mic4 910.8
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     25.0     0.43     8.1     8.8     2.1    254  -37.3     0
+
+next: [39/80] diagonal 150 cm, height 90 cm (x 106.1   y 106.1   z 90 cm) - waiting for the phone button
+
+[38/80] z090-D100  diagonal 100 cm, height 90 cm  (REDO)
+true position (70.7, 70.7, 90.0) cm: distance 134.5 cm, azimuth 45.0 deg, elevation 42.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 464.8  Mic1 498.5  Mic4 910.8
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     24.8     0.39     7.1     9.1     2.1    236  -37.8     0
+
+next: [39/80] diagonal 150 cm, height 90 cm (x 106.1   y 106.1   z 90 cm) - waiting for the phone button
+
+[39/80] z090-D150  diagonal 150 cm, height 90 cm
+true position (106.1, 106.1, 90.0) cm: distance 175.0 cm, azimuth 45.0 deg, elevation 31.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 535.1  Mic1 574.1  Mic4 1054.8
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     1     25.7     0.76     9.8    13.5     2.1    148  -39.5     0
+
+next: [40/80] diagonal 200 cm, height 90 cm (x 141.4   y 141.4   z 90 cm) - waiting for the phone button
+
+[40/80] z090-D200  diagonal 200 cm, height 90 cm
+true position (141.4, 141.4, 90.0) cm: distance 219.3 cm, azimuth 45.0 deg, elevation 24.2 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 565.3  Mic1 606.9  Mic4 1122.9
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     25.4     0.90    17.2    24.4     2.3     77  -40.0     0
+
+next: [41/80] in-between 1, height 90 cm (x 18   y 46.5   z 90 cm) - waiting for the phone button
+
+[41/80] z090-M1  in-between 1, height 90 cm
+true position (18.0, 46.5, 90.0) cm: distance 102.9 cm, azimuth 68.8 deg, elevation 61.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 175.0  Mic3 391.6  Mic4 546.0
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0      9.1     0.44    12.3    15.3     0.6    213  -36.4     0
+
+next: [42/80] in-between 2, height 90 cm (x 33.3   y 78.5   z 90 cm) - waiting for the phone button
+
+[42/80] z090-M2  in-between 2, height 90 cm
+true position (33.3, 78.5, 90.0) cm: distance 124.0 cm, azimuth 67.0 deg, elevation 46.5 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 271.8  Mic3 556.4  Mic4 790.8
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     1     20.6     0.49    12.9    15.1     1.6    174  -37.0     0
+
+next: [43/80] in-between 3, height 90 cm (x 31   y 126   z 90 cm) - waiting for the phone button
+
+[43/80] z090-M3  in-between 3, height 90 cm
+true position (31.0, 126.0, 90.0) cm: distance 157.9 cm, azimuth 76.2 deg, elevation 34.7 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 211.4  Mic3 699.8  Mic4 882.0
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     20.3     0.48     7.5     9.7     1.6    170  -38.8     0
+
+next: [44/80] in-between 4, height 90 cm (x 78.5   y 117.8   z 90 cm) - waiting for the phone button
+
+[44/80] z090-M4  in-between 4, height 90 cm
+true position (78.5, 117.8, 90.0) cm: distance 167.7 cm, azimuth 56.3 deg, elevation 32.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 456.0  Mic3 621.0  Mic4 1024.8
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0    220.6     0.86    60.8    64.4    18.2     99  -39.5     0
+
+next: [45/80] in-between 5, height 90 cm (x 44   y 162   z 90 cm) - waiting for the phone button
+
+[45/80] z090-M5  in-between 5, height 90 cm
+true position (44.0, 162.0, 90.0) cm: distance 190.5 cm, azimuth 74.8 deg, elevation 28.2 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 244.1  Mic3 746.3  Mic4 960.2
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    95     0    191.4     1.01    57.0    60.7    15.7     65  -39.7     0
+
+next: [46/80] in-between 6, height 90 cm (x 110   y 158.5   z 90 cm) - waiting for the phone button
+
+[45/80] z090-M5  in-between 5, height 90 cm  (REDO)
+true position (44.0, 162.0, 90.0) cm: distance 190.5 cm, azimuth 74.8 deg, elevation 28.2 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 244.1  Mic3 746.3  Mic4 960.2
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     21.4     0.97     7.9    13.7     1.7    101  -39.4     0
+
+next: [46/80] in-between 6, height 90 cm (x 110   y 158.5   z 90 cm) - waiting for the phone button
+
+[46/80] z090-M6  in-between 6, height 90 cm
+true position (110.0, 158.5, 90.0) cm: distance 212.9 cm, azimuth 55.2 deg, elevation 25.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 498.3  Mic3 655.2  Mic4 1105.4
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     25.2     1.01    10.4    18.6     2.0     68  -40.0     0
+
+next: [47/80] in-between 7, height 90 cm (x 41.8   y 206   z 90 cm) - waiting for the phone button
+
+[47/80] z090-M7  in-between 7, height 90 cm
+true position (41.8, 206.0, 90.0) cm: distance 228.7 cm, azimuth 78.5 deg, elevation 23.2 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 199.7  Mic3 788.4  Mic4 966.1
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    95     0     22.9     0.79    18.1    28.8     1.8     76  -40.7     0
+
+next: [48/80] in-between 8, height 90 cm (x 125   y 214   z 90 cm) - waiting for the phone button
+
+[48/80] z090-M8  in-between 8, height 90 cm
+true position (125.0, 214.0, 90.0) cm: distance 263.7 cm, azimuth 59.7 deg, elevation 20.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 459.3  Mic3 711.0  Mic4 1130.8
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100     0     0                                               67  -40.8     0
+
+next: [49/80] y axis 50 cm, height 130 cm (x 0   y 50   z 130 cm) - waiting for the phone button
+
+[49/80] z130-Y050  y axis 50 cm, height 130 cm
+true position (0.0, 50.0, 130.0) cm: distance 139.3 cm, azimuth 90.0 deg, elevation 69.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 12.0  Mic3 309.9  Mic4 321.0
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     1     12.9     0.67   500.8   502.0     1.1    181  -38.1     0
+
+next: [50/80] y axis 100 cm, height 130 cm (x 0   y 100   z 130 cm) - waiting for the phone button
+
+[50/80] z130-Y100  y axis 100 cm, height 130 cm
+true position (0.0, 100.0, 130.0) cm: distance 164.0 cm, azimuth 90.0 deg, elevation 52.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 20.8  Mic3 528.8  Mic4 547.4
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     19.2     0.69   589.6   591.3     1.5    175  -38.5     0
+
+next: [51/80] y axis 150 cm, height 130 cm (x 0   y 150   z 130 cm) - waiting for the phone button
+
+[51/80] z130-Y150  y axis 150 cm, height 130 cm
+true position (0.0, 150.0, 130.0) cm: distance 198.5 cm, azimuth 90.0 deg, elevation 40.9 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 25.9  Mic3 657.2  Mic4 680.3
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     20.1     1.05   183.4   595.4     1.6    142  -39.5     0
+
+next: [52/80] y axis 200 cm, height 130 cm (x 0   y 200   z 130 cm) - waiting for the phone button
+
+[52/80] z130-Y200  y axis 200 cm, height 130 cm
+true position (0.0, 200.0, 130.0) cm: distance 238.5 cm, azimuth 90.0 deg, elevation 33.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 28.6  Mic3 730.2  Mic4 756.0
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    95     1     23.5     1.00   471.1   472.8     1.9    111  -40.4     0
+
+next: [53/80] diagonal 50 cm, height 130 cm (x 35.4   y 35.4   z 130 cm) - waiting for the phone button
+
+[53/80] z130-D050  diagonal 50 cm, height 130 cm
+true position (35.4, 35.4, 130.0) cm: distance 139.3 cm, azimuth 45.0 deg, elevation 68.9 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 217.0  Mic1 233.2  Mic4 438.5
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     20.7     0.73    43.8    49.7     1.7    146  -37.8     0
+
+next: [54/80] diagonal 100 cm, height 130 cm (x 70.7   y 70.7   z 130 cm) - waiting for the phone button
+
+[54/80] z130-D100  diagonal 100 cm, height 130 cm
+true position (70.7, 70.7, 130.0) cm: distance 164.0 cm, azimuth 45.0 deg, elevation 52.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 374.4  Mic1 402.1  Mic4 747.4
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     23.3     0.71    22.4    28.3     1.9    156  -38.5     0
+
+next: [55/80] diagonal 150 cm, height 130 cm (x 106.1   y 106.1   z 130 cm) - waiting for the phone button
+
+[55/80] z130-D150  diagonal 150 cm, height 130 cm
+true position (106.1, 106.1, 130.0) cm: distance 198.5 cm, azimuth 45.0 deg, elevation 40.9 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 465.9  Mic1 500.4  Mic4 929.1
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     27.5     0.70    12.3    18.7     2.2    127  -39.7     0
+
+next: [56/80] diagonal 200 cm, height 130 cm (x 141.4   y 141.4   z 130 cm) - waiting for the phone button
+
+[56/80] z130-D200  diagonal 200 cm, height 130 cm
+true position (141.4, 141.4, 130.0) cm: distance 238.5 cm, azimuth 45.0 deg, elevation 33.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 516.0  Mic1 554.3  Mic4 1032.0
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     25.9     1.02    16.8    29.0     2.1     97  -40.0     0
+
+next: [57/80] in-between 1, height 130 cm (x 18   y 46.5   z 130 cm) - waiting for the phone button
+
+[57/80] z130-M1  in-between 1, height 130 cm
+true position (18.0, 46.5, 130.0) cm: distance 139.2 cm, azimuth 68.8 deg, elevation 69.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 126.5  Mic3 288.1  Mic4 406.1
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     1      9.1     0.76    49.0    56.6     0.6    115  -38.3     0
+
+next: [58/80] in-between 2, height 130 cm (x 33.3   y 78.5   z 130 cm) - waiting for the phone button
+
+[58/80] z130-M2  in-between 2, height 130 cm
+true position (33.3, 78.5, 130.0) cm: distance 155.5 cm, azimuth 67.0 deg, elevation 56.7 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 211.4  Mic3 439.4  Mic4 631.7
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     20.2     0.60    20.1    26.6     1.6    150  -38.5     0
+
+next: [59/80] in-between 3, height 130 cm (x 31   y 126   z 130 cm) - waiting for the phone button
+
+[59/80] z130-M3  in-between 3, height 130 cm
+true position (31.0, 126.0, 130.0) cm: distance 183.7 cm, azimuth 76.2 deg, elevation 45.1 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 178.3  Mic3 598.8  Mic4 758.5
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     19.8     0.81    42.7    48.4     1.6     89  -39.5     0
+
+next: [60/80] in-between 4, height 130 cm (x 78.5   y 117.8   z 130 cm) - waiting for the phone button
+
+[60/80] z130-M4  in-between 4, height 130 cm
+true position (78.5, 117.8, 130.0) cm: distance 192.2 cm, azimuth 56.3 deg, elevation 42.6 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 392.3  Mic3 536.5  Mic4 894.1
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     25.8     0.89    11.9    22.2     2.0     69  -39.8     0
+
+next: [61/80] in-between 5, height 130 cm (x 44   y 162   z 130 cm) - waiting for the phone button
+
+[61/80] z130-M5  in-between 5, height 130 cm
+true position (44.0, 162.0, 130.0) cm: distance 212.3 cm, azimuth 74.8 deg, elevation 37.8 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 216.1  Mic3 667.0  Mic4 861.3
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     21.7     0.76    12.5    17.0     1.7    104  -39.8     0
+
+next: [62/80] in-between 6, height 130 cm (x 110   y 158.5   z 130 cm) - waiting for the phone button
+
+[62/80] z130-M6  in-between 6, height 130 cm
+true position (110.0, 158.5, 130.0) cm: distance 232.6 cm, azimuth 55.2 deg, elevation 34.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 452.2  Mic3 595.9  Mic4 1011.1
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     25.8     1.02    12.6    19.3     2.1     67  -40.1     0
+
+next: [63/80] in-between 7, height 130 cm (x 41.8   y 206   z 130 cm) - waiting for the phone button
+
+[63/80] z130-M7  in-between 7, height 130 cm
+true position (41.8, 206.0, 130.0) cm: distance 247.2 cm, azimuth 78.5 deg, elevation 31.7 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 183.1  Mic3 728.0  Mic4 893.7
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    55     0     24.0     1.28    51.2    65.7     1.9     80  -40.4     0
+
+next: [64/80] in-between 8, height 130 cm (x 125   y 214   z 130 cm) - waiting for the phone button
+
+[64/80] z130-M8  in-between 8, height 130 cm
+true position (125.0, 214.0, 130.0) cm: distance 279.9 cm, azimuth 59.7 deg, elevation 27.7 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 430.5  Mic3 667.7  Mic4 1065.1
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    15     0     26.2     1.13    39.3    43.9     2.1     55  -40.8     0
+
+next: [65/80] y axis 50 cm, height 170 cm (x 0   y 50   z 170 cm) - waiting for the phone button
+
+[65/80] z170-Y050  y axis 50 cm, height 170 cm
+true position (0.0, 50.0, 170.0) cm: distance 177.2 cm, azimuth 90.0 deg, elevation 73.6 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 9.3  Mic3 244.4  Mic4 253.3
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    90     0      9.9     1.49   441.7   447.4     0.8    123  -40.4     0
+
+next: [66/80] y axis 100 cm, height 170 cm (x 0   y 100   z 170 cm) - waiting for the phone button
+
+[66/80] z170-Y100  y axis 100 cm, height 170 cm
+true position (0.0, 100.0, 170.0) cm: distance 197.2 cm, azimuth 90.0 deg, elevation 59.5 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 17.0  Mic3 440.2  Mic4 456.0
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     18.1     1.17   501.3   503.1     1.4    122  -40.1     0
+
+next: [67/80] y axis 150 cm, height 170 cm (x 0   y 150   z 170 cm) - waiting for the phone button
+
+[67/80] z170-Y150  y axis 150 cm, height 170 cm
+true position (0.0, 150.0, 170.0) cm: distance 226.7 cm, azimuth 90.0 deg, elevation 48.6 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 22.3  Mic3 575.5  Mic4 596.0
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100   100     0     20.0     1.12   571.7   575.3     1.6    109  -40.2     0
+
+next: [68/80] y axis 200 cm, height 170 cm (x 0   y 200   z 170 cm) - waiting for the phone button
+
+[68/80] z170-Y200  y axis 200 cm, height 170 cm
+true position (0.0, 200.0, 170.0) cm: distance 262.5 cm, azimuth 90.0 deg, elevation 40.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 25.8  Mic3 663.5  Mic4 687.1
+note: 0 deg from a blind plane (x=0 or y=0): distance is poorly determined there, direction is fine
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    95     0     22.1     1.22   515.6   518.5     1.8     91  -39.8     0
+
+next: [69/80] diagonal 50 cm, height 170 cm (x 35.4   y 35.4   z 170 cm) - waiting for the phone button
+
+[69/80] z170-D050  diagonal 50 cm, height 170 cm
+true position (35.4, 35.4, 170.0) cm: distance 177.2 cm, azimuth 45.0 deg, elevation 73.6 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 169.4  Mic1 182.2  Mic4 345.9
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    15     0     17.7     1.09    49.9    66.0     1.4    130  -39.9     0
+
+next: [70/80] diagonal 100 cm, height 170 cm (x 70.7   y 70.7   z 170 cm) - waiting for the phone button
+
+[70/80] z170-D100  diagonal 100 cm, height 170 cm
+true position (70.7, 70.7, 170.0) cm: distance 197.2 cm, azimuth 45.0 deg, elevation 59.5 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 307.9  Mic1 331.0  Mic4 622.1
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100     0     0                                              106  -39.5     0
+
+next: [71/80] diagonal 150 cm, height 170 cm (x 106.1   y 106.1   z 170 cm) - waiting for the phone button
+
+[71/80] z170-D150  diagonal 150 cm, height 170 cm
+true position (106.1, 106.1, 170.0) cm: distance 226.7 cm, azimuth 45.0 deg, elevation 48.6 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 404.1  Mic1 434.3  Mic4 813.5
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    30     0     25.4     1.22    42.9    56.5     2.1     81  -39.9     0
+
+next: [72/80] diagonal 200 cm, height 170 cm (x 141.4   y 141.4   z 170 cm) - waiting for the phone button
+
+[72/80] z170-D200  diagonal 200 cm, height 170 cm
+true position (141.4, 141.4, 170.0) cm: distance 262.5 cm, azimuth 45.0 deg, elevation 40.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic3 465.8  Mic1 500.6  Mic4 937.6
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100     0     0                                               82  -40.0     0
+
+next: [73/80] in-between 1, height 170 cm (x 18   y 46.5   z 170 cm) - waiting for the phone button
+
+[73/80] z170-M1  in-between 1, height 170 cm
+true position (18.0, 46.5, 170.0) cm: distance 177.2 cm, azimuth 68.8 deg, elevation 73.7 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 98.5  Mic3 226.0  Mic4 320.3
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    95     0     10.6     1.32   111.4   122.0     0.7     40  -40.2     0
+
+next: [74/80] in-between 2, height 170 cm (x 33.3   y 78.5   z 170 cm) - waiting for the phone button
+
+[74/80] z170-M2  in-between 2, height 170 cm
+true position (33.3, 78.5, 170.0) cm: distance 190.2 cm, azimuth 67.0 deg, elevation 63.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 170.4  Mic3 357.4  Mic4 517.3
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    80     2     16.5     1.49    33.9    57.2     1.3     76  -40.2     0
+
+next: [75/80] in-between 3, height 170 cm (x 31   y 126   z 170 cm) - waiting for the phone button
+
+[75/80] z170-M3  in-between 3, height 170 cm
+true position (31.0, 126.0, 170.0) cm: distance 213.9 cm, azimuth 76.2 deg, elevation 52.6 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 151.0  Mic3 512.6  Mic4 651.8
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    95     0     19.6     1.06    64.4    79.8     1.5     76  -40.0     0
+
+next: [76/80] in-between 4, height 170 cm (x 78.5   y 117.8   z 170 cm) - waiting for the phone button
+
+[76/80] z170-M4  in-between 4, height 170 cm
+true position (78.5, 117.8, 170.0) cm: distance 221.2 cm, azimuth 56.3 deg, elevation 50.2 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 337.1  Mic3 462.6  Mic4 776.9
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    70     0     22.1     1.13    35.3    46.5     1.8     79  -39.7     0
+
+next: [77/80] in-between 5, height 170 cm (x 44   y 162   z 170 cm) - waiting for the phone button
+
+[77/80] z170-M5  in-between 5, height 170 cm
+true position (44.0, 162.0, 170.0) cm: distance 238.9 cm, azimuth 74.8 deg, elevation 45.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 189.9  Mic3 590.9  Mic4 765.5
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100    15     0     22.0     0.77    69.4    74.8     1.8     68  -40.7     0
+
+next: [78/80] in-between 6, height 170 cm (x 110   y 158.5   z 170 cm) - waiting for the phone button
+
+[78/80] z170-M6  in-between 6, height 170 cm
+true position (110.0, 158.5, 170.0) cm: distance 257.1 cm, azimuth 55.2 deg, elevation 41.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 405.9  Mic3 536.0  Mic4 914.6
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100     0     0                                               71  -40.2     0
+
+next: [79/80] in-between 7, height 170 cm (x 41.8   y 206   z 170 cm) - waiting for the phone button
+
+[79/80] z170-M7  in-between 7, height 170 cm
+true position (41.8, 206.0, 170.0) cm: distance 270.3 cm, azimuth 78.5 deg, elevation 39.0 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 166.0  Mic3 664.3  Mic4 817.0
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100     5     0     21.3     0.00    79.1    79.1     1.7     57  -40.1     0
+
+next: [80/80] in-between 8, height 170 cm (x 125   y 214   z 170 cm) - waiting for the phone button
+
+[80/80] z170-M8  in-between 8, height 170 cm
+true position (125.0, 214.0, 170.0) cm: distance 300.5 cm, azimuth 59.7 deg, elevation 34.4 deg
+expected arrival after first mic [us]: Mic2 0.0  Mic1 398.7  Mic3 619.7  Mic4 991.7
+signal                    gain  det%   ok% extra tdoa rms tdoa std pos err     p90 dir err    snr    lvl  clip
+                          [dB]                       [us]     [us]    [cm]    [cm]   [deg]          [dB]      
+chirp_3-12k_50ms             0   100     0     0                                               58  -40.7     0
+
+all points done - waiting for Finish (or Redo previous) on the phone
+
+series finished
+
+measured in this session:
+z010-Y050    y axis 50 cm     z  10: ok 20/20  pos err 597.4 cm (p90 597.9)  dir err 10.95 deg
+z010-Y050    y axis 50 cm     z  10: ok 20/20  pos err 597.2 cm (p90 597.7)  dir err 10.95 deg  [redo]
+z010-Y050    y axis 50 cm     z  10: ok 20/20  pos err 597.5 cm (p90 598.1)  dir err 11.04 deg  [redo]
+z010-Y050    y axis 50 cm     z  10: ok 20/20  pos err 597.4 cm (p90 598.0)  dir err 11.07 deg  [redo]
+z010-Y100    y axis 100 cm    z  10: ok 20/20  pos err 523.3 cm (p90 523.9)  dir err 10.02 deg
+z010-Y150    y axis 150 cm    z  10: ok 20/20  pos err 462.6 cm (p90 463.6)  dir err  7.62 deg
+z010-Y200    y axis 200 cm    z  10: ok 20/20  pos err 409.5 cm (p90 410.6)  dir err  6.93 deg
+z010-D050    diagonal 50 cm   z  10: ok 20/20  pos err   3.0 cm (p90   3.1)  dir err  4.22 deg
+z010-D100    diagonal 100 cm  z  10: ok 20/20  pos err  19.4 cm (p90  20.3)  dir err  5.98 deg
+z010-D150    diagonal 150 cm  z  10: ok 20/20  pos err  18.9 cm (p90  20.0)  dir err  6.54 deg
+z010-D200    diagonal 200 cm  z  10: ok 19/20  pos err  21.7 cm (p90  23.3)  dir err  6.07 deg
+z010-M1      in-between 1     z  10: ok 20/20  pos err   3.7 cm (p90   3.8)  dir err  6.81 deg
+z010-M2      in-between 2     z  10: ok 20/20  pos err  11.4 cm (p90  12.2)  dir err  5.44 deg
+z010-M3      in-between 3     z  10: ok 19/20  pos err  23.8 cm (p90  25.9)  dir err  7.80 deg
+z010-M4      in-between 4     z  10: ok 20/20  pos err  17.6 cm (p90  18.2)  dir err  6.13 deg
+z010-M5      in-between 5     z  10: ok 20/20  pos err  27.5 cm (p90  31.7)  dir err  6.93 deg
+z010-M6      in-between 6     z  10: ok 20/20  pos err  19.7 cm (p90  21.2)  dir err  5.92 deg
+z010-M7      in-between 7     z  10: ok 20/20  pos err  42.4 cm (p90  52.1)  dir err  6.83 deg
+z010-M8      in-between 8     z  10: ok 11/20  pos err  22.1 cm (p90  30.6)  dir err  4.90 deg
+z050-Y050    y axis 50 cm     z  50: ok 20/20  pos err 740.9 cm (p90 744.5)  dir err  2.88 deg
+z050-Y100    y axis 100 cm    z  50: ok 20/20  pos err  85.2 cm (p90 568.4)  dir err  2.43 deg
+z050-Y150    y axis 150 cm    z  50: ok 20/20  pos err 264.9 cm (p90 475.1)  dir err  2.30 deg
+z050-Y200    y axis 200 cm    z  50: ok 16/20  pos err 414.0 cm (p90 415.1)  dir err  2.22 deg
+z050-D050    diagonal 50 cm   z  50: ok 20/20  pos err   4.6 cm (p90   5.1)  dir err  2.66 deg
+z050-D100    diagonal 100 cm  z  50: ok 20/20  pos err   4.5 cm (p90   4.8)  dir err  2.29 deg
+z050-D150    diagonal 150 cm  z  50: ok 20/20  pos err  24.7 cm (p90  27.5)  dir err  2.10 deg
+z050-D200    diagonal 200 cm  z  50: ok  1/20  pos err  56.1 cm (p90  56.1)  dir err  2.05 deg
+z050-M1      in-between 1     z  50: ok 20/20  pos err   3.1 cm (p90   3.8)  dir err  1.00 deg
+z050-M2      in-between 2     z  50: ok 20/20  pos err   3.6 cm (p90   4.4)  dir err  1.85 deg
+z050-M3      in-between 3     z  50: ok 20/20  pos err   7.0 cm (p90  10.0)  dir err  1.77 deg
+z050-M4      in-between 4     z  50: ok 20/20  pos err  13.1 cm (p90  15.6)  dir err  1.94 deg
+z050-M5      in-between 5     z  50: ok 20/20  pos err  30.7 cm (p90  39.0)  dir err  1.72 deg
+z050-M6      in-between 6     z  50: ok  0/20  NO GOOD DETECTION
+z050-M7      in-between 7     z  50: ok  0/20  NO GOOD DETECTION
+z050-M8      in-between 8     z  50: ok  0/20  NO GOOD DETECTION
+z090-Y050    y axis 50 cm     z  90: ok 20/20  pos err 574.3 cm (p90 576.9)  dir err  1.51 deg
+z090-Y100    y axis 100 cm    z  90: ok 20/20  pos err 642.5 cm (p90 678.0)  dir err  1.71 deg
+z090-Y150    y axis 150 cm    z  90: ok 20/20  pos err 522.7 cm (p90 524.6)  dir err  1.89 deg
+z090-Y150    y axis 150 cm    z  90: ok 20/20  pos err 522.2 cm (p90 525.5)  dir err  1.89 deg  [redo]
+z090-Y150    y axis 150 cm    z  90: ok 20/20  pos err 505.7 cm (p90 524.7)  dir err  1.89 deg  [redo]
+z090-Y150    y axis 150 cm    z  90: ok 20/20  pos err 522.4 cm (p90 525.3)  dir err  1.89 deg  [redo]
+z090-Y150    y axis 150 cm    z  90: ok 20/20  pos err 523.0 cm (p90 525.6)  dir err  1.89 deg  [redo]
+z090-Y200    y axis 200 cm    z  90: ok 20/20  pos err 377.4 cm (p90 441.0)  dir err  2.05 deg
+z090-D050    diagonal 50 cm   z  90: ok 20/20  pos err  18.0 cm (p90  19.5)  dir err  1.77 deg
+z090-D100    diagonal 100 cm  z  90: ok 20/20  pos err   8.1 cm (p90   8.8)  dir err  2.09 deg
+z090-D100    diagonal 100 cm  z  90: ok 20/20  pos err   7.1 cm (p90   9.1)  dir err  2.06 deg  [redo]
+z090-D150    diagonal 150 cm  z  90: ok 20/20  pos err   9.8 cm (p90  13.5)  dir err  2.07 deg
+z090-D200    diagonal 200 cm  z  90: ok 20/20  pos err  17.2 cm (p90  24.4)  dir err  2.27 deg
+z090-M1      in-between 1     z  90: ok 20/20  pos err  12.3 cm (p90  15.3)  dir err  0.58 deg
+z090-M2      in-between 2     z  90: ok 20/20  pos err  12.9 cm (p90  15.1)  dir err  1.59 deg
+z090-M3      in-between 3     z  90: ok 20/20  pos err   7.5 cm (p90   9.7)  dir err  1.59 deg
+z090-M4      in-between 4     z  90: ok 20/20  pos err  60.8 cm (p90  64.4)  dir err 18.16 deg
+z090-M5      in-between 5     z  90: ok 19/20  pos err  57.0 cm (p90  60.7)  dir err 15.73 deg
+z090-M5      in-between 5     z  90: ok 20/20  pos err   7.9 cm (p90  13.7)  dir err  1.67 deg  [redo]
+z090-M6      in-between 6     z  90: ok 20/20  pos err  10.4 cm (p90  18.6)  dir err  1.99 deg
+z090-M7      in-between 7     z  90: ok 19/20  pos err  18.1 cm (p90  28.8)  dir err  1.84 deg
+z090-M8      in-between 8     z  90: ok  0/20  NO GOOD DETECTION
+z130-Y050    y axis 50 cm     z 130: ok 20/20  pos err 500.8 cm (p90 502.0)  dir err  1.09 deg
+z130-Y100    y axis 100 cm    z 130: ok 20/20  pos err 589.6 cm (p90 591.3)  dir err  1.54 deg
+z130-Y150    y axis 150 cm    z 130: ok 20/20  pos err 183.4 cm (p90 595.4)  dir err  1.60 deg
+z130-Y200    y axis 200 cm    z 130: ok 19/20  pos err 471.1 cm (p90 472.8)  dir err  1.92 deg
+z130-D050    diagonal 50 cm   z 130: ok 20/20  pos err  43.8 cm (p90  49.7)  dir err  1.70 deg
+z130-D100    diagonal 100 cm  z 130: ok 20/20  pos err  22.4 cm (p90  28.3)  dir err  1.89 deg
+z130-D150    diagonal 150 cm  z 130: ok 20/20  pos err  12.3 cm (p90  18.7)  dir err  2.20 deg
+z130-D200    diagonal 200 cm  z 130: ok 20/20  pos err  16.8 cm (p90  29.0)  dir err  2.10 deg
+z130-M1      in-between 1     z 130: ok 20/20  pos err  49.0 cm (p90  56.6)  dir err  0.64 deg
+z130-M2      in-between 2     z 130: ok 20/20  pos err  20.1 cm (p90  26.6)  dir err  1.58 deg
+z130-M3      in-between 3     z 130: ok 20/20  pos err  42.7 cm (p90  48.4)  dir err  1.57 deg
+z130-M4      in-between 4     z 130: ok 20/20  pos err  11.9 cm (p90  22.2)  dir err  2.05 deg
+z130-M5      in-between 5     z 130: ok 20/20  pos err  12.5 cm (p90  17.0)  dir err  1.70 deg
+z130-M6      in-between 6     z 130: ok 20/20  pos err  12.6 cm (p90  19.3)  dir err  2.05 deg
+z130-M7      in-between 7     z 130: ok 11/20  pos err  51.2 cm (p90  65.7)  dir err  1.93 deg
+z130-M8      in-between 8     z 130: ok  3/20  pos err  39.3 cm (p90  43.9)  dir err  2.12 deg
+z170-Y050    y axis 50 cm     z 170: ok 18/20  pos err 441.7 cm (p90 447.4)  dir err  0.76 deg
+z170-Y100    y axis 100 cm    z 170: ok 20/20  pos err 501.3 cm (p90 503.1)  dir err  1.43 deg
+z170-Y150    y axis 150 cm    z 170: ok 20/20  pos err 571.7 cm (p90 575.3)  dir err  1.60 deg
+z170-Y200    y axis 200 cm    z 170: ok 19/20  pos err 515.6 cm (p90 518.5)  dir err  1.82 deg
+z170-D050    diagonal 50 cm   z 170: ok  3/20  pos err  49.9 cm (p90  66.0)  dir err  1.44 deg
+z170-D100    diagonal 100 cm  z 170: ok  0/20  NO GOOD DETECTION
+z170-D150    diagonal 150 cm  z 170: ok  6/20  pos err  42.9 cm (p90  56.5)  dir err  2.05 deg
+z170-D200    diagonal 200 cm  z 170: ok  0/20  NO GOOD DETECTION
+z170-M1      in-between 1     z 170: ok 19/20  pos err 111.4 cm (p90 122.0)  dir err  0.75 deg
+z170-M2      in-between 2     z 170: ok 16/20  pos err  33.9 cm (p90  57.2)  dir err  1.30 deg
+z170-M3      in-between 3     z 170: ok 19/20  pos err  64.4 cm (p90  79.8)  dir err  1.52 deg
+z170-M4      in-between 4     z 170: ok 14/20  pos err  35.3 cm (p90  46.5)  dir err  1.75 deg
+z170-M5      in-between 5     z 170: ok  3/20  pos err  69.4 cm (p90  74.8)  dir err  1.80 deg
+z170-M6      in-between 6     z 170: ok  0/20  NO GOOD DETECTION
+z170-M7      in-between 7     z 170: ok  1/20  pos err  79.1 cm (p90  79.1)  dir err  1.73 deg
+z170-M8      in-between 8     z 170: ok  0/20  NO GOOD DETECTION

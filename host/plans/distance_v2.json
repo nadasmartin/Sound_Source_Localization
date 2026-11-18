@@ -1,0 +1,887 @@
+{
+ "name": "distance_v2",
+ "created": "2026-11-18",
+ "description": "User's measuring grid (2026-11-18). 16 horizontal positions in the free area between the +y axis and the +x=y diagonal: Y = on the +y axis at 50/100/150/200 cm, D = on the diagonal at 50/100/150/200 cm from the centre (x = y = d/sqrt2), M1..M8 = in-between points given by the user. Heights z = 10, 50, 90, 130, 170 cm above the mic plane (mic plane 4 cm above the floor). Order: all 16 positions at one height, then the next height. Positions are the planned ones; the user places the phone's speaker on them.",
+ "points": [
+  {
+   "id": "z010-Y050",
+   "line": "Y",
+   "name": "y axis 50 cm",
+   "height_cm": 10,
+   "pos_cm": [
+    0.0,
+    50.0,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-Y100",
+   "line": "Y",
+   "name": "y axis 100 cm",
+   "height_cm": 10,
+   "pos_cm": [
+    0.0,
+    100.0,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-Y150",
+   "line": "Y",
+   "name": "y axis 150 cm",
+   "height_cm": 10,
+   "pos_cm": [
+    0.0,
+    150.0,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-Y200",
+   "line": "Y",
+   "name": "y axis 200 cm",
+   "height_cm": 10,
+   "pos_cm": [
+    0.0,
+    200.0,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-D050",
+   "line": "D",
+   "name": "diagonal 50 cm",
+   "height_cm": 10,
+   "pos_cm": [
+    35.4,
+    35.4,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-D100",
+   "line": "D",
+   "name": "diagonal 100 cm",
+   "height_cm": 10,
+   "pos_cm": [
+    70.7,
+    70.7,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-D150",
+   "line": "D",
+   "name": "diagonal 150 cm",
+   "height_cm": 10,
+   "pos_cm": [
+    106.1,
+    106.1,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-D200",
+   "line": "D",
+   "name": "diagonal 200 cm",
+   "height_cm": 10,
+   "pos_cm": [
+    141.4,
+    141.4,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-M1",
+   "line": "M",
+   "name": "in-between 1",
+   "height_cm": 10,
+   "pos_cm": [
+    18,
+    46.5,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-M2",
+   "line": "M",
+   "name": "in-between 2",
+   "height_cm": 10,
+   "pos_cm": [
+    33.3,
+    78.5,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-M3",
+   "line": "M",
+   "name": "in-between 3",
+   "height_cm": 10,
+   "pos_cm": [
+    31.0,
+    126,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-M4",
+   "line": "M",
+   "name": "in-between 4",
+   "height_cm": 10,
+   "pos_cm": [
+    78.5,
+    117.8,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-M5",
+   "line": "M",
+   "name": "in-between 5",
+   "height_cm": 10,
+   "pos_cm": [
+    44.0,
+    162,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-M6",
+   "line": "M",
+   "name": "in-between 6",
+   "height_cm": 10,
+   "pos_cm": [
+    110,
+    158.5,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-M7",
+   "line": "M",
+   "name": "in-between 7",
+   "height_cm": 10,
+   "pos_cm": [
+    41.8,
+    206,
+    10.0
+   ]
+  },
+  {
+   "id": "z010-M8",
+   "line": "M",
+   "name": "in-between 8",
+   "height_cm": 10,
+   "pos_cm": [
+    125,
+    214,
+    10.0
+   ]
+  },
+  {
+   "id": "z050-Y050",
+   "line": "Y",
+   "name": "y axis 50 cm",
+   "height_cm": 50,
+   "pos_cm": [
+    0.0,
+    50.0,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-Y100",
+   "line": "Y",
+   "name": "y axis 100 cm",
+   "height_cm": 50,
+   "pos_cm": [
+    0.0,
+    100.0,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-Y150",
+   "line": "Y",
+   "name": "y axis 150 cm",
+   "height_cm": 50,
+   "pos_cm": [
+    0.0,
+    150.0,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-Y200",
+   "line": "Y",
+   "name": "y axis 200 cm",
+   "height_cm": 50,
+   "pos_cm": [
+    0.0,
+    200.0,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-D050",
+   "line": "D",
+   "name": "diagonal 50 cm",
+   "height_cm": 50,
+   "pos_cm": [
+    35.4,
+    35.4,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-D100",
+   "line": "D",
+   "name": "diagonal 100 cm",
+   "height_cm": 50,
+   "pos_cm": [
+    70.7,
+    70.7,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-D150",
+   "line": "D",
+   "name": "diagonal 150 cm",
+   "height_cm": 50,
+   "pos_cm": [
+    106.1,
+    106.1,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-D200",
+   "line": "D",
+   "name": "diagonal 200 cm",
+   "height_cm": 50,
+   "pos_cm": [
+    141.4,
+    141.4,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-M1",
+   "line": "M",
+   "name": "in-between 1",
+   "height_cm": 50,
+   "pos_cm": [
+    18,
+    46.5,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-M2",
+   "line": "M",
+   "name": "in-between 2",
+   "height_cm": 50,
+   "pos_cm": [
+    33.3,
+    78.5,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-M3",
+   "line": "M",
+   "name": "in-between 3",
+   "height_cm": 50,
+   "pos_cm": [
+    31.0,
+    126,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-M4",
+   "line": "M",
+   "name": "in-between 4",
+   "height_cm": 50,
+   "pos_cm": [
+    78.5,
+    117.8,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-M5",
+   "line": "M",
+   "name": "in-between 5",
+   "height_cm": 50,
+   "pos_cm": [
+    44.0,
+    162,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-M6",
+   "line": "M",
+   "name": "in-between 6",
+   "height_cm": 50,
+   "pos_cm": [
+    110,
+    158.5,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-M7",
+   "line": "M",
+   "name": "in-between 7",
+   "height_cm": 50,
+   "pos_cm": [
+    41.8,
+    206,
+    50.0
+   ]
+  },
+  {
+   "id": "z050-M8",
+   "line": "M",
+   "name": "in-between 8",
+   "height_cm": 50,
+   "pos_cm": [
+    125,
+    214,
+    50.0
+   ]
+  },
+  {
+   "id": "z090-Y050",
+   "line": "Y",
+   "name": "y axis 50 cm",
+   "height_cm": 90,
+   "pos_cm": [
+    0.0,
+    50.0,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-Y100",
+   "line": "Y",
+   "name": "y axis 100 cm",
+   "height_cm": 90,
+   "pos_cm": [
+    0.0,
+    100.0,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-Y150",
+   "line": "Y",
+   "name": "y axis 150 cm",
+   "height_cm": 90,
+   "pos_cm": [
+    0.0,
+    150.0,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-Y200",
+   "line": "Y",
+   "name": "y axis 200 cm",
+   "height_cm": 90,
+   "pos_cm": [
+    0.0,
+    200.0,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-D050",
+   "line": "D",
+   "name": "diagonal 50 cm",
+   "height_cm": 90,
+   "pos_cm": [
+    35.4,
+    35.4,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-D100",
+   "line": "D",
+   "name": "diagonal 100 cm",
+   "height_cm": 90,
+   "pos_cm": [
+    70.7,
+    70.7,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-D150",
+   "line": "D",
+   "name": "diagonal 150 cm",
+   "height_cm": 90,
+   "pos_cm": [
+    106.1,
+    106.1,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-D200",
+   "line": "D",
+   "name": "diagonal 200 cm",
+   "height_cm": 90,
+   "pos_cm": [
+    141.4,
+    141.4,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-M1",
+   "line": "M",
+   "name": "in-between 1",
+   "height_cm": 90,
+   "pos_cm": [
+    18,
+    46.5,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-M2",
+   "line": "M",
+   "name": "in-between 2",
+   "height_cm": 90,
+   "pos_cm": [
+    33.3,
+    78.5,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-M3",
+   "line": "M",
+   "name": "in-between 3",
+   "height_cm": 90,
+   "pos_cm": [
+    31.0,
+    126,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-M4",
+   "line": "M",
+   "name": "in-between 4",
+   "height_cm": 90,
+   "pos_cm": [
+    78.5,
+    117.8,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-M5",
+   "line": "M",
+   "name": "in-between 5",
+   "height_cm": 90,
+   "pos_cm": [
+    44.0,
+    162,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-M6",
+   "line": "M",
+   "name": "in-between 6",
+   "height_cm": 90,
+   "pos_cm": [
+    110,
+    158.5,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-M7",
+   "line": "M",
+   "name": "in-between 7",
+   "height_cm": 90,
+   "pos_cm": [
+    41.8,
+    206,
+    90.0
+   ]
+  },
+  {
+   "id": "z090-M8",
+   "line": "M",
+   "name": "in-between 8",
+   "height_cm": 90,
+   "pos_cm": [
+    125,
+    214,
+    90.0
+   ]
+  },
+  {
+   "id": "z130-Y050",
+   "line": "Y",
+   "name": "y axis 50 cm",
+   "height_cm": 130,
+   "pos_cm": [
+    0.0,
+    50.0,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-Y100",
+   "line": "Y",
+   "name": "y axis 100 cm",
+   "height_cm": 130,
+   "pos_cm": [
+    0.0,
+    100.0,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-Y150",
+   "line": "Y",
+   "name": "y axis 150 cm",
+   "height_cm": 130,
+   "pos_cm": [
+    0.0,
+    150.0,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-Y200",
+   "line": "Y",
+   "name": "y axis 200 cm",
+   "height_cm": 130,
+   "pos_cm": [
+    0.0,
+    200.0,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-D050",
+   "line": "D",
+   "name": "diagonal 50 cm",
+   "height_cm": 130,
+   "pos_cm": [
+    35.4,
+    35.4,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-D100",
+   "line": "D",
+   "name": "diagonal 100 cm",
+   "height_cm": 130,
+   "pos_cm": [
+    70.7,
+    70.7,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-D150",
+   "line": "D",
+   "name": "diagonal 150 cm",
+   "height_cm": 130,
+   "pos_cm": [
+    106.1,
+    106.1,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-D200",
+   "line": "D",
+   "name": "diagonal 200 cm",
+   "height_cm": 130,
+   "pos_cm": [
+    141.4,
+    141.4,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-M1",
+   "line": "M",
+   "name": "in-between 1",
+   "height_cm": 130,
+   "pos_cm": [
+    18,
+    46.5,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-M2",
+   "line": "M",
+   "name": "in-between 2",
+   "height_cm": 130,
+   "pos_cm": [
+    33.3,
+    78.5,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-M3",
+   "line": "M",
+   "name": "in-between 3",
+   "height_cm": 130,
+   "pos_cm": [
+    31.0,
+    126,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-M4",
+   "line": "M",
+   "name": "in-between 4",
+   "height_cm": 130,
+   "pos_cm": [
+    78.5,
+    117.8,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-M5",
+   "line": "M",
+   "name": "in-between 5",
+   "height_cm": 130,
+   "pos_cm": [
+    44.0,
+    162,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-M6",
+   "line": "M",
+   "name": "in-between 6",
+   "height_cm": 130,
+   "pos_cm": [
+    110,
+    158.5,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-M7",
+   "line": "M",
+   "name": "in-between 7",
+   "height_cm": 130,
+   "pos_cm": [
+    41.8,
+    206,
+    130.0
+   ]
+  },
+  {
+   "id": "z130-M8",
+   "line": "M",
+   "name": "in-between 8",
+   "height_cm": 130,
+   "pos_cm": [
+    125,
+    214,
+    130.0
+   ]
+  },
+  {
+   "id": "z170-Y050",
+   "line": "Y",
+   "name": "y axis 50 cm",
+   "height_cm": 170,
+   "pos_cm": [
+    0.0,
+    50.0,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-Y100",
+   "line": "Y",
+   "name": "y axis 100 cm",
+   "height_cm": 170,
+   "pos_cm": [
+    0.0,
+    100.0,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-Y150",
+   "line": "Y",
+   "name": "y axis 150 cm",
+   "height_cm": 170,
+   "pos_cm": [
+    0.0,
+    150.0,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-Y200",
+   "line": "Y",
+   "name": "y axis 200 cm",
+   "height_cm": 170,
+   "pos_cm": [
+    0.0,
+    200.0,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-D050",
+   "line": "D",
+   "name": "diagonal 50 cm",
+   "height_cm": 170,
+   "pos_cm": [
+    35.4,
+    35.4,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-D100",
+   "line": "D",
+   "name": "diagonal 100 cm",
+   "height_cm": 170,
+   "pos_cm": [
+    70.7,
+    70.7,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-D150",
+   "line": "D",
+   "name": "diagonal 150 cm",
+   "height_cm": 170,
+   "pos_cm": [
+    106.1,
+    106.1,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-D200",
+   "line": "D",
+   "name": "diagonal 200 cm",
+   "height_cm": 170,
+   "pos_cm": [
+    141.4,
+    141.4,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-M1",
+   "line": "M",
+   "name": "in-between 1",
+   "height_cm": 170,
+   "pos_cm": [
+    18,
+    46.5,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-M2",
+   "line": "M",
+   "name": "in-between 2",
+   "height_cm": 170,
+   "pos_cm": [
+    33.3,
+    78.5,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-M3",
+   "line": "M",
+   "name": "in-between 3",
+   "height_cm": 170,
+   "pos_cm": [
+    31.0,
+    126,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-M4",
+   "line": "M",
+   "name": "in-between 4",
+   "height_cm": 170,
+   "pos_cm": [
+    78.5,
+    117.8,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-M5",
+   "line": "M",
+   "name": "in-between 5",
+   "height_cm": 170,
+   "pos_cm": [
+    44.0,
+    162,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-M6",
+   "line": "M",
+   "name": "in-between 6",
+   "height_cm": 170,
+   "pos_cm": [
+    110,
+    158.5,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-M7",
+   "line": "M",
+   "name": "in-between 7",
+   "height_cm": 170,
+   "pos_cm": [
+    41.8,
+    206,
+    170.0
+   ]
+  },
+  {
+   "id": "z170-M8",
+   "line": "M",
+   "name": "in-between 8",
+   "height_cm": 170,
+   "pos_cm": [
+    125,
+    214,
+    170.0
+   ]
+  }
+ ]
+}

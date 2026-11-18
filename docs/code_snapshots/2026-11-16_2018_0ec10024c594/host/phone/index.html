@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sound Bench Speaker</title>
+<style>
+  :root {
+    --bg: #f6f6f3; --fg: #1d1d1b; --muted: #6b6b66; --card: #ffffff;
+    --line: #dcdcd6; --accent: #1f6feb; --ok: #1a7f37; --warn: #b35900; --bad: #c62828;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #151514; --fg: #ececea; --muted: #9a9a94; --card: #1f1f1d;
+            --line: #33332f; --accent: #5b9bff; --ok: #4cc26b; --warn: #f0a04b; --bad: #ff6b6b; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 520px; margin: 0 auto; padding: 20px 16px 40px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 20px; font-size: 14px; }
+  button { width: 100%; font: inherit; font-weight: 600; font-size: 20px; padding: 22px;
+           border: 0; border-radius: 14px; background: var(--accent); color: #fff; }
+  button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--line);
+                     font-size: 15px; padding: 12px; margin-top: 12px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+          padding: 16px; margin-top: 16px; }
+  .state { font-size: 28px; font-weight: 700; }
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%;
+         background: var(--muted); margin-right: 8px; vertical-align: middle; }
+  .dot.ok { background: var(--ok); } .dot.warn { background: var(--warn); } .dot.bad { background: var(--bad); }
+  dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 12px 0 0; font-size: 14px; }
+  dt { color: var(--muted); } dd { margin: 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .flash { transition: background 60ms; }
+  .flash.on { background: var(--accent); color: #fff; }
+  ul { padding-left: 20px; margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Sound bench speaker</h1>
+  <p class="sub">The laptop decides what this phone plays. Leave this page open in front.</p>
+
+  <div id="setup">
+    <button id="start">Tap to start audio</button>
+    <ul>
+      <li>Set the <b>media volume</b> to the level you want to keep for the whole test (max is fine), and don't change it during a run.</li>
+      <li>Keep the <b>screen on</b> (raise the screen timeout); a locked phone stops playing.</li>
+      <li>iPhone: if you hear nothing, check the <b>Ring/Silent switch</b> and that no Bluetooth speaker/headphones are connected.</li>
+      <li>Turn off sound effects / equalizers / "Dolby" if the phone has them.</li>
+      <li>The <b>speaker opening</b> is the point you measure the position of.</li>
+    </ul>
+  </div>
+
+  <div id="live" class="hidden">
+    <div class="card flash" id="statecard">
+      <div><span class="dot" id="dot"></span><span id="conn">connecting…</span></div>
+      <div class="state" id="state">idle</div>
+      <dl>
+        <dt>signal</dt><dd id="sig">–</dd>
+        <dt>gain</dt><dd id="gain">–</dd>
+        <dt>progress</dt><dd id="prog">–</dd>
+        <dt>audio</dt><dd id="audio">–</dd>
+      </dl>
+    </div>
+    <button class="secondary" id="test">Play a test chirp here</button>
+    <div class="card">
+      <b>Which channel is the main (bottom) speaker?</b>
+      <ul>
+        <li>Lock the screen rotation in <b>portrait</b> first (the channels swap when the phone turns).</li>
+        <li>Hold your ear (or a finger over each opening) to the speakers and press each button.</li>
+      </ul>
+      <button class="secondary" id="testL">Beep LEFT channel only</button>
+      <button class="secondary" id="testR">Beep RIGHT channel only</button>
+    </div>
+  </div>
+</main>
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+let ctx = null, seq = 0, boot = null, active = [], doneTimer = null, beatTimer = null;
+const buffers = new Map();
+
+function show(state, color) { $("state").textContent = state; }
+function setConn(text, cls) { $("conn").textContent = text; $("dot").className = "dot " + cls; }
+
+async function report(body) {
+  try {
+    await fetch("/report", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(Object.assign({ ua: navigator.userAgent,
+        sampleRate: ctx && ctx.sampleRate, baseLatency: ctx && ctx.baseLatency,
+        outputLatency: ctx && ctx.outputLatency, audioState: ctx && ctx.state }, body)) });
+  } catch (e) { /* the poll loop shows connection problems */ }
+}
+
+async function load(url) {
+  if (!buffers.has(url)) {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error("download failed: " + r.status);
+    buffers.set(url, await ctx.decodeAudioData(await r.arrayBuffer()));
+  }
+  return buffers.get(url);
+}
+
+function stopAll() {
+  for (const s of active) { try { s.stop(); } catch (e) {} }
+  active = [];
+  clearTimeout(doneTimer); clearInterval(beatTimer);
+}
+
+async function play(cmd, mySeq) {
+  stopAll();
+  if (ctx.state !== "running") {
+    try { await Promise.race([ctx.resume(), new Promise((ok) => setTimeout(ok, 1000))]); } catch (e) {}
+  }
+  if (ctx.state !== "running") {
+    $("conn").textContent = "audio is paused by the phone – tap anywhere on this page";
+    $("dot").className = "dot warn";
+    throw new Error("audio context is " + ctx.state + " (tap the page on the phone)");
+  }
+  const buf = await load(cmd.url);
+  // one volume for all repetitions (gain_db), or one per repetition (gains)
+  const gains = cmd.gains || Array(cmd.count).fill(cmd.gain_db);
+  cmd.count = gains.length;
+  const t0 = ctx.currentTime + cmd.delay;
+  for (let k = 0; k < cmd.count; k++) {
+    const gain = ctx.createGain();
+    gain.gain.value = Math.pow(10, gains[k] / 20);
+    gain.connect(ctx.destination);
+    const src = ctx.createBufferSource();
+    src.buffer = buf; src.connect(gain); src.start(t0 + k * cmd.period);
+    active.push(src);
+  }
+  $("sig").textContent = cmd.name;
+  $("gain").textContent = cmd.gains ? `${Math.min(...gains)}..${Math.max(...gains)} dB (varies)` : cmd.gain_db + " dB";
+  show("playing");
+  // progress + a flash on every repetition
+  beatTimer = setInterval(() => {
+    const k = Math.floor((ctx.currentTime - t0) / cmd.period);
+    const inBurst = (ctx.currentTime - t0) - k * cmd.period < buf.duration + 0.05;
+    $("prog").textContent = `${Math.min(Math.max(k + 1, 0), cmd.count)} / ${cmd.count}`;
+    $("statecard").classList.toggle("on", k >= 0 && k < cmd.count && inBurst);
+  }, 30);
+  report({ seq: mySeq, state: "playing", name: cmd.name, count: cmd.count, t0,
+           audioSession: navigator.audioSession ? navigator.audioSession.type : null });
+  const total = (t0 - ctx.currentTime) + cmd.count * cmd.period;
+  doneTimer = setTimeout(() => {
+    clearInterval(beatTimer); $("statecard").classList.remove("on");
+    show("idle"); report({ seq: mySeq, state: "done", name: cmd.name });
+  }, total * 1000);
+}
+
+async function handle(cmd, mySeq) {
+  try {
+    if (cmd.action === "play") await play(cmd, mySeq);
+    else if (cmd.action === "preload") {   // fetch + decode every sound up front
+      show("loading sounds");
+      for (let i = 0; i < cmd.urls.length; i++) {
+        $("prog").textContent = `${i + 1} / ${cmd.urls.length}`;
+        await load(cmd.urls[i]);
+      }
+      show("idle"); report({ seq: mySeq, state: "done", loaded: cmd.urls.length });
+    }
+    else if (cmd.action === "stop") { stopAll(); show("stopped"); report({ seq: mySeq, state: "done" }); }
+  } catch (e) {
+    show("error"); $("prog").textContent = String(e);
+    report({ seq: mySeq, state: "error", error: String(e) });
+  }
+}
+
+async function pollLoop() {
+  // Start from the current command number so a stale command isn't replayed
+  try { const st = await (await fetch("/state")).json(); seq = st.seq; boot = st.boot; } catch (e) {}
+  await report({ seq, state: "ready" });
+  for (;;) {
+    try {
+      const r = await (await fetch(`/poll?after=${seq}`, { cache: "no-store" })).json();
+      setConn("connected to laptop", "ok");
+      if (ctx.state !== "running") setConn("audio suspended – tap the page", "warn");
+      if (r.boot && r.boot !== boot) {   // the laptop restarted its server: re-sync
+        boot = r.boot; seq = r.seq; report({ seq, state: "ready" });
+      } else if (r.cmd && r.seq > seq) { seq = r.seq; handle(r.cmd, seq); }
+    } catch (e) {
+      setConn("no connection to laptop – retrying", "bad");
+      await new Promise((ok) => setTimeout(ok, 1000));
+    }
+  }
+}
+
+// A tiny silent WAV, looped by an <audio> element: on iOS this keeps the page
+// in the "media playback" audio session, which the Ring/Silent switch does
+// not mute (Web Audio alone counts as "ambient" sound and is muted).
+function silentWavUrl() {
+  const n = 4800, b = new ArrayBuffer(44 + n * 2), v = new DataView(b);
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, "RIFF"); v.setUint32(4, 36 + n * 2, true); w(8, "WAVEfmt "); v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 48000, true);
+  v.setUint32(28, 96000, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  w(36, "data"); v.setUint32(40, n * 2, true);
+  return URL.createObjectURL(new Blob([b], { type: "audio/wav" }));
+}
+
+$("start").addEventListener("click", async () => {
+  // Media playback, not "ambient": ignore the silent switch (Safari 16.4+)
+  try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}
+  const keepAlive = new Audio(silentWavUrl());
+  keepAlive.loop = true;
+  keepAlive.setAttribute("playsinline", "");
+  keepAlive.play().catch(() => {});
+  ctx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: "interactive" });
+  await ctx.resume();
+  // a silent buffer, played inside the tap, unlocks audio on iOS
+  const s = ctx.createBufferSource(); s.buffer = ctx.createBuffer(1, 1, ctx.sampleRate);
+  s.connect(ctx.destination); s.start();
+  $("audio").textContent = `${ctx.sampleRate} Hz, ${ctx.state}`;
+  $("setup").classList.add("hidden"); $("live").classList.remove("hidden");
+  try { if (navigator.wakeLock) await navigator.wakeLock.request("screen"); } catch (e) {}
+  pollLoop();
+});
+document.body.addEventListener("click", () => { if (ctx && ctx.state !== "running") ctx.resume(); });
+setInterval(() => { if (ctx) $("audio").textContent = `${ctx.sampleRate} Hz, ${ctx.state}` +
+  (navigator.audioSession ? `, session ${navigator.audioSession.type}` : ""); }, 500);
+for (const [id, ch] of [["testL", "left"], ["testR", "right"]])
+  $(id).addEventListener("click", () =>
+    handle({ action: "play", name: `test chirp, ${ch} channel only`, url: `/sig/chirp_1.5-8k_50ms.wav?ch=${ch}`,
+             gain_db: 0, count: 4, period: 0.4, delay: 0.2 }, -1));
+$("test").addEventListener("click", () =>
+  handle({ action: "play", name: "test chirp", url: "/sig/chirp_1.5-8k_50ms.wav",
+           gain_db: 0, count: 3, period: 0.5, delay: 0.2 }, -1));
+</script>
+</body>
+</html>

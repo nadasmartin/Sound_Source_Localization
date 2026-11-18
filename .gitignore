@@ -1,0 +1,10 @@
+# Python environment and caches
+.venv/
+__pycache__/
+*.pyc
+
+# PlatformIO build output (rebuilt by `pio run`)
+firmware/.pio/
+
+# Wi-Fi credentials: never commit. Copy wifi_secrets.example.h to wifi_secrets.h
+firmware/include/wifi_secrets.h
