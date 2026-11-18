@@ -4279,3 +4279,39 @@ All series data is on this laptop, in the project folder:
 - **Code:** snapshots in `docs/code_snapshots/`.
 
 The project is not under git and there is no copy elsewhere.
+
+## 2026-11-18 18:20 — GitHub repository prepared; interactive analysis page
+
+**Repository.**
+- The project is now a git repository (`main`), with the first commit `0b0dc55` containing everything.
+- `.gitignore` leaves out:
+  - `.venv/`, `__pycache__/`, `firmware/.pio/` (build output);
+  - **`firmware/include/wifi_secrets.h` (Wi-Fi password)**. It is replaced by `firmware/include/wifi_secrets.example.h`. The commit was checked to contain no password.
+- Remote: `git@github.com:nadasmartin/okos_lab_proj.git` (private). The repository has to be created on GitHub first: no GitHub CLI or browser access was available here, while SSH push access is confirmed.
+
+**Analysis page.**
+- File: `docs/dashboard/index.html`, built by `host/build_dashboard.py` from the template `host/dashboard/template.html`. Command (in `host/`): `python build_dashboard.py`, about 1 min.
+- What the builder does:
+  - re-localizes **every detected chirp** (accepted and rejected, 5115 in all) on the host with the re-fitted rotation (0°);
+  - keeps the ESP32's own result beside it;
+  - embeds all 254 placements (redos included) plus points, geometry, rotation fits and exclusions into one self-contained page (0.8 MB). Plotly is loaded from cdnjs.
+- Content:
+  - Global filters: arrays, heights, lines (y axis off by default, because its distance failure dominates every median), solution (host re-fit vs ESP32 as run), chirps (accepted vs all detected), show excluded.
+  - Overview: KPIs per array; capability-by-height heatmap; capability classes (3D position / direction only / unreliable) with adjustable thresholds; rotation and Fraunhofer table; notes.
+  - 3D view: every layer can be switched on and off:
+    - measurements: chirp cloud, medians, error vectors, measured direction rays, rejected chirps;
+    - truth: positions, labels, true rays;
+    - scene: mic arrays, floor, free area, blind planes, Fraunhofer hemispheres, axes.
+    - Colour by array, error, height or class; view box; camera presets.
+  - Accuracy vs distance: per-height facets (3D error, direction, success, Fraunhofer lines); CDFs; error vs elevation.
+  - Floor and side map: top view and along-the-ray view.
+  - Bias and geometry: distance bias; measured error vs geometric sensitivity (with 1/3/10/30 µs lines); azimuth vs elevation bias; direction error vs azimuth.
+  - Reliability: point × array heatmap (success, error, direction, bias); quality vs misfit of every chirp with the accept thresholds; success vs distance; level and SNR.
+  - Data table: sortable and filterable, CSV export.
+  - Point inspector: every chirp, every placement, top and along-the-ray plots.
+  - Chirp CSV export; light and dark theme; deep links `#tab` or `#tab/point/array`.
+- Tested in headless Chrome: every tab, the inspector and dark mode.
+
+**Two observations the page makes visible** (for the conclusions):
+1. **Geometry explains the position error.** Measured 3D error vs predicted geometric sensitivity falls between the 1 µs and 3 µs effective timing-noise lines for nearly all points of all three arrays.
+2. **The errors lie along the ray.** The inspector's along-the-ray view and the side map show the measured positions on the true direction but too close. Every array gets the direction and loses the distance.

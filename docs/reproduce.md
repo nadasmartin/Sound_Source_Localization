@@ -210,6 +210,7 @@ Later runs: the automatic entries in `docs/experiment_log.md` carry the command,
 - **2026-11-18 13:25:** `bench_results/series/<plan>/excluded.json` + `analyze_series.py` skips the points listed there (a30 z090-M4, wrong placement). Mic square changed to 20 cm; rotation +2.13° assumed (not re-calibrated).
 - **2026-11-18 16:45:** rotation re-fitted on the series a30/a20: ≈0° (−0.15 / −0.05), not +2.13°. `localize.MEASURED_ROT_DEG` = 0.0; `analyze_series.py` gains `fit_rotation` and `--rot` (re-localize on the host). Evaluate a30/a20 with `--rot 0`; run a10 with `--rot 0`.
 - **2026-11-18 17:50:** series a10 measured (all three layouts done). `analyze_series.py`: `geom` = ∞ exactly in a blind plane (was 0.0).
+- **2026-11-18 18:20:** git repository (`.gitignore` keeps out `.venv`, `.pio`, `wifi_secrets.h`); analysis page `docs/dashboard/index.html` from `host/build_dashboard.py` + `host/dashboard/template.html` (rebuild: `python build_dashboard.py` in `host/`).
   - `host/plans/distance_v2.json` = the user's grid (16 positions × heights z 10/50/90/130/170 cm). `distance_v1.json` was deleted, never used.
   - `host/series.py`: the phone panel drives the session (Ready / Redo previous / Skip, Finish); default `--count 20`; a redo writes `<point>_2_…` and analysis uses the newest.
   - `host/phone_server.py`: `POST /action`, `set_ui()`, `wait_action()`, `ui`/`uiv` in `/poll`. `host/phone/index.html`: measurement panel.

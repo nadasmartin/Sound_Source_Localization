@@ -1,0 +1,1119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Array Accuracy Explorer</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.35.3/plotly.min.js"></script>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f3f0; --surface:#fcfcfb; --surface2:#f0efec; --surface3:#e8e7e3;
+  --border:#e0dfda; --grid:#e4e3df; --axis:#a3a29c;
+  --text:#0b0b0b; --text2:#52514e; --text3:#7a7974;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --good:#0ca30c; --warn:#fab219; --crit:#d03b3b; --good-text:#006300;
+  --truth:#0b0b0b; --accent:#2a78d6; --accent-soft:#cde2fb;
+  --shadow:0 1px 2px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#121211; --surface:#1a1a19; --surface2:#242422; --surface3:#2e2e2c;
+    --border:#383835; --grid:#2c2c2a; --axis:#6b6a65;
+    --text:#f0efec; --text2:#c3c2b7; --text3:#8f8e86;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --good:#0ca30c; --warn:#fab219; --crit:#d03b3b; --good-text:#0ca30c;
+    --truth:#f0efec; --accent:#3987e5; --accent-soft:#184f95;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#121211; --surface:#1a1a19; --surface2:#242422; --surface3:#2e2e2c;
+  --border:#383835; --grid:#2c2c2a; --axis:#6b6a65;
+  --text:#f0efec; --text2:#c3c2b7; --text3:#8f8e86;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --good:#0ca30c; --warn:#fab219; --crit:#d03b3b; --good-text:#0ca30c;
+  --truth:#f0efec; --accent:#3987e5; --accent-soft:#184f95;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrap{max-width:1600px;margin:0 auto;padding:0 16px}
+header.top{padding-top:18px;padding-bottom:10px}
+header.top .row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+h1{font-size:22px;margin:0;letter-spacing:-.01em}
+.sub{color:var(--text2);margin-top:4px;font-size:13px}
+.btn{appearance:none;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:8px;padding:6px 11px;font:inherit;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--surface2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.bar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+.filters{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding:10px 0}
+.fgroup{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.flabel{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-right:2px}
+.chip{border:1px solid var(--border);background:var(--surface);color:var(--text2);border-radius:999px;padding:4px 10px;font-size:13px;cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:6px;line-height:1.2}
+.chip .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.chip.on{background:var(--surface3);color:var(--text);border-color:var(--axis)}
+.chip:not(.on) .dot{opacity:.3}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--surface);color:var(--text2);padding:5px 10px;font:inherit;font-size:13px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--border)}
+.seg button.on{background:var(--surface3);color:var(--text);font-weight:600}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;padding-top:2px;scrollbar-width:none}
+nav.tabs button{border:0;background:transparent;color:var(--text2);padding:9px 12px;font:inherit;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+nav.tabs button.on{color:var(--text);border-bottom-color:var(--accent);font-weight:600}
+main{padding:16px 0 60px}
+.tab{display:none}
+.tab.on{display:block}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:1000px){.g2,.g3{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);min-width:0}
+.card h2{font-size:15px;margin:0 0 2px}
+.card h3{font-size:13px;margin:12px 0 6px;color:var(--text2)}
+.card .desc{color:var(--text2);font-size:12.5px;margin:0 0 8px}
+.plot{width:100%;min-height:340px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.kpi-card{border-top:3px solid var(--c)}
+.kpi-head{display:flex;align-items:baseline;justify-content:space-between}
+.kpi-head .name{font-weight:650;font-size:15px}
+.kpi-head .meta{color:var(--text3);font-size:12px}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-top:10px}
+.kpi .v{font-size:24px;font-weight:650;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:13px;font-weight:500;color:var(--text2);margin-left:2px}
+.kpi .l{font-size:12px;color:var(--text2)}
+.note{font-size:12.5px;color:var(--text2)}
+.muted{color:var(--text3)}
+table.t{border-collapse:collapse;width:100%;font-size:12.5px;font-variant-numeric:tabular-nums}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
+table.t th{position:sticky;top:0;background:var(--surface2);color:var(--text2);font-weight:600;cursor:pointer;user-select:none;z-index:1}
+table.t th.l,table.t td.l{text-align:left}
+table.t tbody tr:hover{background:var(--surface2);cursor:pointer}
+table.t tr.exc td{opacity:.5;text-decoration:line-through}
+.tablewrap{overflow:auto;max-height:70vh;border:1px solid var(--border);border-radius:8px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;padding:1px 7px;border-radius:999px;border:1px solid var(--border);color:var(--text2);white-space:nowrap}
+.tag i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.layout3d{display:grid;grid-template-columns:290px minmax(0,1fr);gap:14px}
+@media (max-width:1000px){.layout3d{grid-template-columns:minmax(0,1fr)}}
+.panel{max-height:calc(100vh - 170px);overflow:auto;position:sticky;top:120px}
+@media (max-width:1000px){.panel{position:static;max-height:none}}
+.layer{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;cursor:pointer}
+.layer input{accent-color:var(--accent)}
+.panel h3{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin:14px 0 4px}
+.panel h3:first-child{margin-top:0}
+select,input[type=text],input[type=search]{font:inherit;font-size:13px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:5px 8px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.rng{display:grid;grid-template-columns:1fr auto;gap:4px 8px;align-items:center;font-size:12.5px;color:var(--text2)}
+.rng b{color:var(--text);font-variant-numeric:tabular-nums}
+#plot3d{height:calc(100vh - 190px);min-height:520px}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:min(820px,100vw);background:var(--surface);border-left:1px solid var(--border);box-shadow:-8px 0 30px rgba(0,0,0,.18);z-index:50;transform:translateX(105%);transition:transform .2s ease;display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.drawer .dh{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.drawer .db{padding:14px 16px;overflow:auto;flex:1}
+.drawer h2{margin:0;font-size:18px}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:40;display:none}
+.scrim.on{display:block}
+.legendrow{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--text2);margin:4px 0 8px}
+.legendrow span{display:inline-flex;align-items:center;gap:6px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:13px}
+.kv div:nth-child(odd){color:var(--text2)}
+.callout{border-left:3px solid var(--accent);background:var(--surface2);padding:8px 12px;border-radius:0 8px 8px 0;font-size:13px;color:var(--text2);margin:8px 0}
+.flexrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+ul.find{margin:6px 0 0;padding-left:18px;color:var(--text2);font-size:13px}
+ul.find li{margin:3px 0}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:4px}
+#loading{padding:40px;text-align:center;color:var(--text2)}
+</style>
+</head>
+<body>
+<header class="top wrap">
+  <div class="row">
+    <div>
+      <h1>Microphone array accuracy explorer</h1>
+      <div class="sub" id="subtitle"></div>
+    </div>
+    <div class="flexrow">
+      <button class="btn" id="btnCsv" title="All chirps of the current filter as CSV">Export chirps CSV</button>
+      <button class="btn" id="btnTheme" title="Theme">Theme: auto</button>
+    </div>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="filters">
+      <div class="fgroup"><span class="flabel">Arrays</span><span id="fSeries"></span></div>
+      <div class="fgroup"><span class="flabel">Heights z</span><span id="fHeights"></span></div>
+      <div class="fgroup"><span class="flabel">Lines</span><span id="fLines"></span></div>
+      <div class="fgroup"><span class="flabel">Solution</span>
+        <span class="seg" id="fSol">
+          <button data-v="host" title="Every chirp re-localized on the laptop with the re-fitted rotation (same for all arrays)">Host, re-fitted rotation</button>
+          <button data-v="esp" title="What the ESP32 computed during the run (a30/a20 ran with +2.13 deg)">ESP32 as run</button>
+        </span></div>
+      <div class="fgroup"><span class="flabel">Chirps</span>
+        <span class="seg" id="fChirps">
+          <button data-v="ok" title="Only chirps that passed the misfit and quality checks">Accepted</button>
+          <button data-v="all" title="Every detected chirp, also the rejected ones">All detected</button>
+        </span></div>
+      <label class="fgroup layer" title="Points ruled out by the user (excluded.json)"><input type="checkbox" id="fExcl"> show excluded</label>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button data-t="overview">Overview</button>
+      <button data-t="v3d">3D view</button>
+      <button data-t="dist">Accuracy vs distance</button>
+      <button data-t="map">Floor &amp; side map</button>
+      <button data-t="bias">Bias &amp; geometry</button>
+      <button data-t="rel">Reliability</button>
+      <button data-t="table">Data table</button>
+      <button data-t="about">About the data</button>
+    </nav>
+  </div>
+</div>
+
+<main class="wrap">
+  <div id="loading">Loading Plotly… (needs internet once; the data is inside this file)</div>
+
+  <!-- OVERVIEW -->
+  <section class="tab" id="t-overview">
+    <div class="kpis" id="kpis"></div>
+    <div class="grid g2" style="margin-top:14px">
+      <div class="card">
+        <h2>Capability by height</h2>
+        <p class="desc">Median over the selected points of each point's mean 3D error, median direction error and success rate. Click a cell to list its points in the data table.</p>
+        <div class="flexrow" style="margin-bottom:6px"><span class="seg" id="capMetric">
+          <button data-v="pos">3D position [cm]</button><button data-v="dir">Direction [°]</button><button data-v="ok">Success [%]</button></span></div>
+        <div id="pCap" class="plot" style="min-height:300px"></div>
+      </div>
+      <div class="card">
+        <h2>What each array can deliver</h2>
+        <p class="desc">Each point is classified with the thresholds below. <b>3D position</b>: position and direction within limits. <b>Direction only</b>: direction within limit, position not. <b>Unreliable</b>: success rate below the limit or direction outside it.</p>
+        <div class="grid g3" style="gap:10px">
+          <div class="rng">Position ≤ <b id="vPosTh"></b><input type="range" id="rPosTh" min="2" max="150" step="1" style="grid-column:1/-1"></div>
+          <div class="rng">Direction ≤ <b id="vDirTh"></b><input type="range" id="rDirTh" min="0.5" max="15" step="0.5" style="grid-column:1/-1"></div>
+          <div class="rng">Success ≥ <b id="vOkTh"></b><input type="range" id="rOkTh" min="0" max="100" step="5" style="grid-column:1/-1"></div>
+        </div>
+        <div id="pRegime" class="plot" style="min-height:260px"></div>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top:14px">
+      <div class="card">
+        <h2>Array geometry and calibration</h2>
+        <div id="geoTable"></div>
+        <div class="callout">Rotation: the ESP32 localized a30 and a20 with +2.13° (from the P1–P4 sweeps). The series data itself fits ≈0° for all three arrays, so the <b>Host</b> solution re-localizes every chirp with that rotation. Switch <b>Solution</b> to <b>ESP32 as run</b> to see the original results.</div>
+      </div>
+      <div class="card">
+        <h2>Notes</h2>
+        <ul class="find" id="notes"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3D -->
+  <section class="tab" id="t-v3d">
+    <div class="layout3d">
+      <div class="card panel" id="panel3d">
+        <h3>Colour by</h3>
+        <select id="colorBy" style="width:100%">
+          <option value="series">Array</option>
+          <option value="pos">3D position error</option>
+          <option value="dir">Direction error</option>
+          <option value="height">Height of the point</option>
+          <option value="regime">Capability class</option>
+        </select>
+        <h3>Measurements</h3>
+        <label class="layer"><input type="checkbox" data-l="cloud"> Every chirp (point cloud)</label>
+        <label class="layer"><input type="checkbox" data-l="median"> Median measured position</label>
+        <label class="layer"><input type="checkbox" data-l="vectors"> Error vectors (truth → median)</label>
+        <label class="layer"><input type="checkbox" data-l="dirrays"> Measured direction rays</label>
+        <label class="layer"><input type="checkbox" data-l="rejected"> Rejected chirps (×)</label>
+        <h3>Ground truth</h3>
+        <label class="layer"><input type="checkbox" data-l="truth"> True positions</label>
+        <label class="layer"><input type="checkbox" data-l="labels"> Point labels</label>
+        <label class="layer"><input type="checkbox" data-l="truerays"> True direction rays</label>
+        <h3>Scene</h3>
+        <label class="layer"><input type="checkbox" data-l="mics"> Microphone arrays</label>
+        <label class="layer"><input type="checkbox" data-l="floor"> Floor (4 cm below mics)</label>
+        <label class="layer"><input type="checkbox" data-l="area"> Free measuring area</label>
+        <label class="layer"><input type="checkbox" data-l="blind"> Blind planes x = 0, y = 0</label>
+        <label class="layer"><input type="checkbox" data-l="fraun"> Fraunhofer distance (hemisphere)</label>
+        <label class="layer"><input type="checkbox" data-l="axes"> Axis arrows</label>
+        <h3>View</h3>
+        <select id="viewBox" style="width:100%">
+          <option value="room">Room box (−60…300 cm), hide outliers</option>
+          <option value="wide">Wide box (−300…800 cm)</option>
+          <option value="all">Everything (auto)</option>
+        </select>
+        <div class="flexrow" style="margin-top:8px">
+          <button class="btn" data-cam="iso">3D</button>
+          <button class="btn" data-cam="top">Top</button>
+          <button class="btn" data-cam="side">Side</button>
+          <button class="btn" data-cam="ray">Along diagonal</button>
+        </div>
+        <h3>Markers</h3>
+        <div class="rng">Chirp size <b id="vPt"></b><input type="range" id="rPt" min="1" max="6" step="0.5" style="grid-column:1/-1"></div>
+        <div class="rng">Chirp opacity <b id="vOp"></b><input type="range" id="rOp" min="0.1" max="1" step="0.05" style="grid-column:1/-1"></div>
+        <p class="note" id="hidden3d" style="margin-top:10px"></p>
+        <p class="note muted">Drag to rotate, scroll to zoom, right-drag to pan. Click a marker to inspect its point.</p>
+      </div>
+      <div class="card" style="padding:6px"><div id="plot3d"></div></div>
+    </div>
+  </section>
+
+  <!-- DISTANCE -->
+  <section class="tab" id="t-dist">
+    <div class="card">
+      <h2>Accuracy vs distance, per height</h2>
+      <p class="desc">x: distance of the true position from the array centre. Rows: mean 3D position error (log), median direction error (log), success rate. Marker shape = line of points (■ y axis, ● diagonal, ▲ in-between). Dotted verticals: Fraunhofer distance 2·side²/λ at 7.5 kHz. Click a marker to inspect it.</p>
+      <div class="legendrow" id="distLegend"></div>
+      <div id="pDist" class="plot" style="min-height:760px"></div>
+    </div>
+    <div class="grid g2" style="margin-top:14px">
+      <div class="card">
+        <h2>Error distributions (CDF)</h2>
+        <p class="desc">Share of chirps (newest placement of each selected point) whose error is below x.</p>
+        <div class="flexrow"><span class="seg" id="cdfMetric"><button data-v="pos">3D position</button><button data-v="dir">Direction</button><button data-v="range">|Distance|</button></span></div>
+        <div id="pCdf" class="plot"></div>
+      </div>
+      <div class="card">
+        <h2>Error vs elevation</h2>
+        <p class="desc">Steep sources hide the distance from a planar array; near-grazing sources (z = 10 cm) suffer from the floor echo.</p>
+        <div class="flexrow"><span class="seg" id="elMetric"><button data-v="pos">3D position</button><button data-v="dir">Direction</button></span></div>
+        <div id="pElev" class="plot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section class="tab" id="t-map">
+    <div class="card">
+      <div class="flexrow">
+        <div><h2>Floor &amp; side map</h2><p class="desc" style="margin:0">Truth (◆) and median measured position per array, joined by the error. <b>Top</b>: x–y. <b>Side</b>: horizontal distance from the centre vs height, which shows whether the error lies along the ray (distance) or across it (direction).</p></div>
+        <span class="spacer"></span>
+        <span class="seg" id="mapView"><button data-v="top">Top (x–y)</button><button data-v="side">Side (distance–z)</button></span>
+        <label class="layer"><input type="checkbox" id="mapCloud"> chirps</label>
+      </div>
+      <div class="flexrow" style="margin-top:8px"><span class="flabel">Height</span><span id="mapHeights"></span></div>
+      <div id="pMap" class="plot" style="min-height:640px"></div>
+    </div>
+  </section>
+
+  <!-- BIAS -->
+  <section class="tab" id="t-bias">
+    <div class="grid g2">
+      <div class="card">
+        <h2>Distance bias</h2>
+        <p class="desc">Median signed distance error (measured − true) per point. Negative = the source is placed too close.</p>
+        <div class="flexrow"><span class="seg" id="biasUnit"><button data-v="cm">cm</button><button data-v="rel">% of distance</button></span></div>
+        <div id="pBias" class="plot"></div>
+      </div>
+      <div class="card">
+        <h2>Measured error vs geometric sensitivity</h2>
+        <p class="desc">x: distance uncertainty the geometry alone predicts for 1 µs timing noise per mic. Grey lines: what 1, 3, 10 and 30 µs effective timing noise would give. Points exactly in a blind plane (∞) are left out.</p>
+        <div id="pGeom" class="plot"></div>
+      </div>
+      <div class="card">
+        <h2>Direction bias: azimuth vs elevation error</h2>
+        <p class="desc">Median signed errors per point. A common azimuth offset = array rotation. Switch <b>Solution</b> to compare +2.13° (ESP32) with the re-fit.</p>
+        <div id="pAzEl" class="plot"></div>
+      </div>
+      <div class="card">
+        <h2>Direction error vs azimuth</h2>
+        <p class="desc">Median direction error per point against the true azimuth (90° = y axis, the blind plane; 45° = diagonal).</p>
+        <div id="pAz" class="plot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RELIABILITY -->
+  <section class="tab" id="t-rel">
+    <div class="grid g2">
+      <div class="card" style="grid-row:span 2">
+        <h2>Point × array heatmap</h2>
+        <p class="desc">Every selected point (rows, grouped by height) for every array. Click a cell to inspect it.</p>
+        <div class="flexrow"><span class="seg" id="hmMetric"><button data-v="ok">Success [%]</button><button data-v="pos">3D error [cm]</button><button data-v="dir">Direction [°]</button><button data-v="range">Distance bias [cm]</button></span></div>
+        <div id="pHeat" class="plot" style="min-height:1100px"></div>
+      </div>
+      <div class="card">
+        <h2>Why chirps are rejected</h2>
+        <p class="desc">Each detected chirp: misfit of the six delays (log) vs matched-filter quality. Accepted = misfit &lt; <span id="thMis"></span> µs and quality &gt; <span id="thQ"></span> (lines).</p>
+        <div id="pQM" class="plot"></div>
+      </div>
+      <div class="card">
+        <h2>Success rate vs distance</h2>
+        <p class="desc">Per point; colour = array, facet lines = heights in the hover.</p>
+        <div id="pOkDist" class="plot"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h2>Received level and SNR</h2>
+      <p class="desc">Median per point. The phone volume was fixed, so the level follows distance, aim and reflections.</p>
+      <div class="flexrow"><span class="seg" id="lvlMetric"><button data-v="lvl">Level [dB]</button><button data-v="snr">SNR</button></span></div>
+      <div id="pLvl" class="plot"></div>
+    </div>
+  </section>
+
+  <!-- TABLE -->
+  <section class="tab" id="t-table">
+    <div class="card">
+      <div class="flexrow" style="margin-bottom:10px">
+        <h2 style="margin:0">Per point and array</h2>
+        <span class="spacer"></span>
+        <input type="search" id="tblFilter" placeholder="filter: z090, D100, a20, in-between…" style="min-width:260px">
+        <button class="btn" id="btnTblCsv">Download table CSV</button>
+      </div>
+      <div class="tablewrap"><table class="t" id="tbl"></table></div>
+      <p class="note" id="tblNote" style="margin-top:8px"></p>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="tab" id="t-about">
+    <div class="grid g2">
+      <div class="card"><h2>Measurement</h2><div id="aboutMeas"></div></div>
+      <div class="card"><h2>Metrics</h2>
+        <ul class="find">
+          <li><b>3D position error</b>: |measured − true| per chirp; a point's value is the mean (p95 also given).</li>
+          <li><b>Direction error</b>: angle between the measured direction (far-field solution, independent of the distance) and the true direction from the array centre; median per point.</li>
+          <li><b>Distance bias</b>: median of |measured| − |true| (signed).</li>
+          <li><b>Success rate</b>: accepted chirps / chirps played (20 per point).</li>
+          <li><b>Geometric sensitivity</b>: distance std the geometry predicts for 1 µs independent timing noise on each mic (CRLB); ∞ exactly in a blind plane.</li>
+          <li><b>Fraunhofer distance</b>: 2·D²/λ, λ at 7.5 kHz; D = side (and diagonal in the table).</li>
+          <li>Statistics use the <b>newest placement</b> of each point (a redo replaces the earlier one). All placements remain in the inspector.</li>
+        </ul>
+      </div>
+      <div class="card"><h2>Series</h2><div id="aboutSeries"></div></div>
+      <div class="card"><h2>Rebuild this page</h2>
+        <p class="note">In <code>host/</code>: <code>python build_dashboard.py</code> (re-localizes every chirp, about 2 min) → <code>docs/dashboard/index.html</code>. Template: <code>host/dashboard/template.html</code>.</p>
+        <div id="aboutGen" class="note"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="dh"><div><h2 id="dTitle"></h2><div class="sub" id="dSub"></div></div><button class="btn" id="dClose">Close ✕</button></div>
+  <div class="db" id="dBody"></div>
+</aside>
+
+<script>
+const D = /*__DATA__*/null;
+</script>
+<script>
+"use strict";
+/* ---------------------------------------------------------------- data */
+const EV = D.events.map(a => ({pl:a[0], n:a[1], ok:!!a[2], q:a[3], mis:a[4], snr:a[5], lvl:a[6], clip:a[7], arr:a[8],
+  esp:{pos:a[9], az:a[10], el:a[11]}, host:{pos:a[12], az:a[13], el:a[14]}}));
+const PL = D.placements; PL.forEach(p => p.ev = []); EV.forEach(e => PL[e.pl].ev.push(e));
+const PTS = D.points, PT = Object.fromEntries(PTS.map(p => [p.id, p]));
+const SER = D.series, SBY = Object.fromEntries(SER.map((s, i) => [s.id, Object.assign(s, {idx:i})]));
+const CUR = {}; PL.forEach(p => { if (p.current) CUR[p.series + "|" + p.point] = p; });
+const HEIGHTS = [...new Set(PTS.map(p => p.h))].sort((a, b) => a - b);
+const LINES = [["D","diagonal"],["M","in-between"],["Y","y axis (blind plane)"]];
+const LINE_SYM = {Y:"square", D:"circle", M:"triangle-up"};
+const LINE_GLYPH = {Y:"■", D:"●", M:"▲"};
+const S3D_SYM = ["circle", "square", "diamond", "cross"];
+
+/* --------------------------------------------------------------- state */
+const store = {get(k, d){ try { const v = localStorage.getItem("aae:" + k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } },
+               set(k, v){ try { localStorage.setItem("aae:" + k, JSON.stringify(v)); } catch(e){} }};
+const S = {
+  series: new Set(SER.map(s => s.id)), heights: new Set(HEIGHTS), lines: new Set(["D","M"]),
+  sol: "host", chirps: "ok", showExcl: false, tab: store.get("tab", "overview"),
+  posTh: 20, dirTh: 3, okTh: 50, capMetric: "pos", cdfMetric: "pos", elMetric: "pos",
+  mapView: "top", mapH: 50, mapCloud: false, biasUnit: "cm", hmMetric: "ok", lvlMetric: "lvl",
+  colorBy: "series", viewBox: "room", ptSize: 2.5, ptOp: 0.55,
+  layers: {cloud:true, median:true, vectors:true, dirrays:false, rejected:false, truth:true, labels:false,
+           truerays:false, mics:true, floor:true, area:true, blind:false, fraun:false, axes:true},
+  sort: {k:"h", dir:1}, filter: "", theme: store.get("theme", "auto"),
+};
+
+/* ---------------------------------------------------------------- math */
+const isF = v => v != null && Number.isFinite(v);
+const median = a => { a = a.filter(isF); if (!a.length) return NaN; const b = [...a].sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; };
+const pct = (a, p) => { a = a.filter(isF); if (!a.length) return NaN; const b = [...a].sort((x, y) => x - y), i = (b.length - 1) * p / 100, lo = Math.floor(i), hi = Math.ceil(i); return b[lo] + (b[hi] - b[lo]) * (i - lo); };
+const mean = a => { a = a.filter(isF); return a.length ? a.reduce((s, v) => s + v, 0) / a.length : NaN; };
+const norm = v => Math.hypot(v[0], v[1], v[2]);
+const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+const rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;
+const unit = (az, el) => [Math.cos(rad(el)) * Math.cos(rad(az)), Math.cos(rad(el)) * Math.sin(rad(az)), Math.sin(rad(el))];
+const angle = (u, v) => deg(Math.acos(Math.max(-1, Math.min(1, u[0] * v[0] + u[1] * v[1] + u[2] * v[2]))));
+const wrap180 = d => ((d + 540) % 360) - 180;
+const fmt = (v, d = 1) => isF(v) ? v.toFixed(d) : "–";
+const okPos = p => p && isF(p[0]) && isF(p[1]) && isF(p[2]);
+const sol = e => S.sol === "esp" ? e.esp : e.host;
+
+/* --------------------------------------------------------------- stats */
+let cache = {};
+function stats(ser, pid) {
+  const key = ser + "|" + pid;
+  if (cache[key] !== undefined) return cache[key];
+  const pl = CUR[key];
+  if (!pl) return cache[key] = null;
+  cache[key] = placementStats(pl);
+  return cache[key];
+}
+function placementStats(pl) {
+  const pt = PT[pl.point], T = pl.truth || pt.truth, tn = norm(T), tu = T.map(v => v / tn);
+  const det = pl.ev, okE = det.filter(e => e.ok), use = S.chirps === "ok" ? okE : det;
+  const s = {ser: pl.series, pid: pl.point, pt, pl, played: pl.count, det: det.length, okN: Math.min(okE.length, pl.count),
+             n: use.length, excluded: pl.excluded || null, truth: T};
+  s.okRate = s.played ? s.okN / s.played : 0;
+  s.lvl = median(det.map(e => e.lvl)); s.snr = median(det.map(e => e.snr));
+  s.mis = median(det.map(e => e.mis)); s.q = median(det.map(e => e.q));
+  if (use.length) {
+    const P = use.map(e => sol(e).pos).filter(okPos);
+    const perr = P.map(p => dist(p, T)), rerr = P.map(p => norm(p) - tn);
+    const U = use.map(e => unit(sol(e).az, sol(e).el));
+    const derr = U.map(u => angle(u, tu));
+    s.perr = perr; s.derr = derr; s.rerr = rerr;
+    s.posMean = mean(perr); s.posMed = median(perr); s.posP95 = pct(perr, 95);
+    s.rangeMed = median(rerr); s.rangeRel = 100 * s.rangeMed / tn;
+    s.dirMed = median(derr); s.dirP95 = pct(derr, 95);
+    s.azErr = median(use.map(e => wrap180(sol(e).az - pt.az)));
+    s.elErr = median(use.map(e => sol(e).el - pt.el));
+    s.medPos = [0, 1, 2].map(i => median(P.map(p => p[i])));
+    const m = [0, 1, 2].map(i => mean(U.map(u => u[i]))), mn = norm(m);
+    s.medDir = m.map(v => v / mn);
+    s.spread = Math.hypot(...[0, 1, 2].map(i => { const a = P.map(p => p[i]), mu = mean(a); return Math.sqrt(mean(a.map(v => (v - mu) ** 2))); }));
+  }
+  s.regime = regime(s);
+  return s;
+}
+function regime(s) {
+  if (!s || s.okRate * 100 < S.okTh || !isF(s.dirMed)) return "unrel";
+  if (s.dirMed > S.dirTh) return "unrel";
+  if (isF(s.posMean) && s.posMean <= S.posTh) return "3d";
+  return "dir";
+}
+const REG = {"3d": ["3D position", "--good"], "dir": ["Direction only", "--warn"], "unrel": ["Unreliable", "--crit"]};
+const visPoints = () => PTS.filter(p => S.heights.has(p.h) && S.lines.has(p.line));
+const visSeries = () => SER.filter(s => S.series.has(s.id));
+function rows(opts = {}) {
+  const out = [];
+  for (const s of visSeries()) for (const p of visPoints()) {
+    const st = stats(s.id, p.id);
+    if (!st) continue;
+    if (st.excluded && !S.showExcl && !opts.keepExcluded) continue;
+    out.push(st);
+  }
+  return out;
+}
+
+/* --------------------------------------------------------------- theme */
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const isDark = () => S.theme === "dark" || (S.theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+const sc = s => css("--s" + (SBY[s].idx + 1));
+function seqScale() {
+  const L = ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95", "#0d366b"];
+  const st = isDark() ? [...L].reverse() : L;
+  return st.map((c, i) => [i / (st.length - 1), c]);
+}
+function applyTheme() {
+  if (S.theme === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", S.theme);
+  document.getElementById("btnTheme").textContent = "Theme: " + S.theme;
+}
+function axis(o = {}) {
+  return Object.assign({gridcolor: css("--grid"), zerolinecolor: css("--axis"), linecolor: css("--axis"), tickcolor: css("--axis"),
+    ticks: "outside", ticklen: 4, automargin: true, showline: true, title: {font: {size: 12, color: css("--text2")}},
+    tickfont: {color: css("--text2"), size: 11}}, o);
+}
+function baseLayout(o = {}) {
+  const L = {paper_bgcolor: css("--surface"), plot_bgcolor: css("--surface"),
+    font: {family: "system-ui,-apple-system,Segoe UI,Roboto,sans-serif", color: css("--text2"), size: 12},
+    margin: {l: 60, r: 16, t: 16, b: 48}, hovermode: "closest",
+    hoverlabel: {bgcolor: css("--surface2"), bordercolor: css("--border"), font: {color: css("--text"), size: 12}},
+    legend: {orientation: "h", y: 1.02, yanchor: "bottom", x: 0, font: {color: css("--text2")}},
+    xaxis: axis(), yaxis: axis()};
+  for (const k in o) L[k] = (typeof o[k] === "object" && !Array.isArray(o[k]) && L[k] && typeof L[k] === "object") ? Object.assign({}, L[k], o[k]) : o[k];
+  return L;
+}
+const CFG = {displaylogo: false, responsive: true, modeBarButtonsToRemove: ["lasso2d", "select2d", "autoScale2d"],
+             toImageButtonOptions: {format: "png", scale: 2}};
+const logTicks = (lo = 0.1, hi = 2000) => { const v = []; for (let e = -2; e <= 4; e++) for (const m of [1, 2, 5]) { const x = m * 10 ** e; if (x >= lo && x <= hi) v.push(x); } return v; };
+function logAxis(o = {}) { const t = logTicks(o._lo, o._hi); delete o._lo; delete o._hi; return axis(Object.assign({type: "log", tickvals: t, ticktext: t.map(v => String(+v.toPrecision(3)))}, o)); }
+
+/* ------------------------------------------------------------ controls */
+function chips(el, items, set, onChange, dotColor) {
+  el.innerHTML = "";
+  for (const [v, label] of items) {
+    const c = document.createElement("span");
+    c.className = "chip" + (set.has(v) ? " on" : "");
+    c.innerHTML = (dotColor ? `<span class="dot" style="background:${dotColor(v)}"></span>` : "") + label;
+    c.title = "click: toggle · double-click: only this";
+    c.onclick = () => { set.has(v) ? set.delete(v) : set.add(v); if (!set.size) set.add(v); onChange(); };
+    c.ondblclick = () => { set.clear(); set.add(v); onChange(); };
+    el.appendChild(c);
+  }
+}
+function seg(id, key, cb) {
+  const el = document.getElementById(id);
+  const sync = () => el.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === String(S[key])));
+  el.querySelectorAll("button").forEach(b => b.onclick = () => { S[key] = b.dataset.v; sync(); cb(); });
+  sync();
+}
+function buildFilters() {
+  chips(document.getElementById("fSeries"), SER.map(s => [s.id, `${s.side_cm} cm <span class="muted">${s.id}</span>`]), S.series, changed, sc);
+  chips(document.getElementById("fHeights"), HEIGHTS.map(h => [h, h + " cm"]), S.heights, changed);
+  chips(document.getElementById("fLines"), LINES.map(([k, n]) => [k, LINE_GLYPH[k] + " " + n]), S.lines, changed);
+}
+function changed(resetCache = true) {
+  if (resetCache) cache = {};
+  buildFilters();
+  dirty = new Set(TABS);
+  renderTab(S.tab);
+}
+
+/* ---------------------------------------------------------------- tabs */
+const TABS = ["overview", "v3d", "dist", "map", "bias", "rel", "table", "about"];
+let dirty = new Set(TABS);
+function showTab(t) {
+  S.tab = t; store.set("tab", t);
+  try { history.replaceState(null, "", "#" + t); } catch (e) {}
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.t === t));
+  document.querySelectorAll(".tab").forEach(s => s.classList.toggle("on", s.id === "t-" + t));
+  renderTab(t);
+}
+function renderTab(t) {
+  if (!dirty.has(t)) { document.querySelectorAll("#t-" + t + " .js-plotly-plot").forEach(p => Plotly.Plots.resize(p)); return; }
+  dirty.delete(t);
+  ({overview: renderOverview, v3d: render3D, dist: renderDist, map: renderMap, bias: renderBias, rel: renderRel,
+    table: renderTable, about: renderAbout})[t]();
+}
+const plot = (id, data, layout, cfg = CFG) => { const el = document.getElementById(id); Plotly.react(el, data, layout, cfg); return el; };
+function onClickInspect(el) {
+  el.removeAllListeners && el.removeAllListeners("plotly_click");
+  el.on("plotly_click", ev => { const p = ev.points && ev.points[0]; if (!p || !p.customdata) return;
+    const cd = Array.isArray(p.customdata) ? p.customdata : [p.customdata]; if (PT[cd[0]]) openInspector(cd[0], cd[1]); });
+}
+
+/* ------------------------------------------------------------ overview */
+function aggregate(list) {
+  return {pos: median(list.map(s => s.posMean)), dir: median(list.map(s => s.dirMed)), ok: 100 * mean(list.map(s => s.okRate)),
+          n: list.length, chirps: list.reduce((a, s) => a + s.det, 0),
+          r3d: list.filter(s => s.regime === "3d").length, rdir: list.filter(s => s.regime === "dir").length};
+}
+function renderOverview() {
+  const R = rows();
+  const k = document.getElementById("kpis"); k.innerHTML = "";
+  for (const s of visSeries()) {
+    const list = R.filter(r => r.ser === s.id), a = aggregate(list);
+    k.insertAdjacentHTML("beforeend", `<div class="card kpi-card" style="--c:${sc(s.id)}">
+      <div class="kpi-head"><span class="name"><span class="sw" style="background:${sc(s.id)}"></span>${s.side_cm} cm array</span>
+      <span class="meta">${s.id} · ${a.n} points · ${a.chirps} chirps</span></div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="v">${fmt(a.pos, 1)}<small>cm</small></div><div class="l">3D position error (median of points)</div></div>
+        <div class="kpi"><div class="v">${fmt(a.dir, 2)}<small>°</small></div><div class="l">direction error (median of points)</div></div>
+        <div class="kpi"><div class="v">${fmt(a.ok, 0)}<small>%</small></div><div class="l">chirps accepted</div></div>
+        <div class="kpi"><div class="v">${a.r3d}<small> / ${a.rdir}</small></div><div class="l">points: 3D position / direction only</div></div>
+      </div></div>`);
+  }
+  // capability heatmap rows=heights cols=series
+  const ser = visSeries(), hs = HEIGHTS.filter(h => S.heights.has(h));
+  const metric = S.capMetric;
+  const z = [], txt = [];
+  for (const h of hs) {
+    const zr = [], tr = [];
+    for (const s of ser) {
+      const a = aggregate(R.filter(r => r.ser === s.id && r.pt.h === h));
+      const v = metric === "pos" ? a.pos : metric === "dir" ? a.dir : a.ok;
+      zr.push(isF(v) ? (metric === "ok" ? v : Math.log10(Math.max(v, 0.05))) : null);
+      tr.push(isF(v) ? (metric === "ok" ? fmt(v, 0) + " %" : metric === "pos" ? fmt(v, 1) + " cm" : fmt(v, 2) + "°") : "–");
+    }
+    z.push(zr); txt.push(tr);
+  }
+  const cs = metric === "ok" ? seqScale().map(([p, c], i, arr) => [p, arr[arr.length - 1 - i][1]]) : seqScale();
+  const el = plot("pCap", [{type: "heatmap", z, x: ser.map(s => s.side_cm + " cm"), y: hs.map(h => "z = " + h + " cm"),
+      text: txt, texttemplate: "%{text}", textfont: {size: 13}, colorscale: cs, showscale: false, xgap: 3, ygap: 3,
+      hovertemplate: "%{y}, %{x}: %{text}<extra></extra>",
+      zmin: metric === "ok" ? 0 : metric === "pos" ? 0 : -0.5, zmax: metric === "ok" ? 100 : metric === "pos" ? 2.3 : 1.2}],
+    baseLayout({margin: {l: 90, r: 10, t: 30, b: 40}, xaxis: axis({showline: false, ticks: ""}),
+      yaxis: axis({autorange: "reversed", showline: false, ticks: ""})}));
+  el.removeAllListeners && el.removeAllListeners("plotly_click");
+  el.on("plotly_click", ev => { const p = ev.points[0]; S.filter = p.x.replace(" cm", "") === p.x ? "" : `${SER.find(s => s.side_cm + " cm" === p.x).id} z${String(p.y.match(/\d+/)[0]).padStart(3, "0")}`; document.getElementById("tblFilter").value = S.filter; dirty.add("table"); showTab("table"); });
+  // regime stacked bars
+  const cats = ["3d", "dir", "unrel"];
+  plot("pRegime", cats.map(c => ({type: "bar", orientation: "h", name: REG[c][0], y: ser.map(s => s.side_cm + " cm"),
+      x: ser.map(s => R.filter(r => r.ser === s.id && r.regime === c).length), marker: {color: css(REG[c][1]), line: {color: css("--surface"), width: 2}},
+      text: ser.map(s => { const n = R.filter(r => r.ser === s.id && r.regime === c).length; return n ? String(n) : ""; }), textposition: "inside",
+      insidetextfont: {color: c === "dir" ? "#0b0b0b" : "#ffffff"},
+      hovertemplate: "%{y}: %{x} points " + REG[c][0].toLowerCase() + "<extra></extra>"})),
+    baseLayout({barmode: "stack", margin: {l: 70, r: 10, t: 30, b: 40}, xaxis: axis({title: {text: "points"}}), yaxis: axis({autorange: "reversed", ticks: ""}),
+      legend: {orientation: "h", y: 1.1, x: 0, traceorder: "normal"}}));
+  // geometry table
+  document.getElementById("geoTable").innerHTML = `<table class="t"><thead><tr><th class="l">array</th><th>side</th><th>rotation (run)</th><th>rotation (fit)</th><th>delay rms at fit / run</th><th>Fraunhofer (side / diag.)</th></tr></thead><tbody>${
+    SER.map(s => `<tr><td class="l"><span class="sw" style="background:${sc(s.id)}"></span>${s.id}</td><td>${s.side_cm} cm</td><td>${s.rot_run >= 0 ? "+" : ""}${s.rot_run.toFixed(2)}°</td><td>${s.rot_fit >= 0 ? "+" : ""}${s.rot_fit.toFixed(2)}°</td><td>${s.rms_fit_us.toFixed(1)} / ${s.rms_run_us.toFixed(1)} µs</td><td>${fmt(s.fraunhofer_cm[0], 0)} / ${fmt(s.fraunhofer_cm[1], 0)} cm</td></tr>`).join("")}</tbody></table>`;
+  const ex = D.meta.excluded.map(e => `<code>${e.series} ${e.point}</code> (${e.reason})`).join(", ");
+  document.getElementById("notes").innerHTML = [
+    `Grid: 16 positions × 5 heights (z above the mic plane; the mic plane is ${D.meta.mic_plane_above_floor_cm} cm above the floor), 20 chirps (${D.meta.signal}) per point and array.`,
+    `The <b>y axis</b> (x = 0) is a blind plane of a square array: only one independent delay across x, so distance is not observable there, direction is.`,
+    `<b>z = 10 cm</b>: the source is almost in the mic plane and the floor echo arrives with the direct sound; direction is worst here for every array.`,
+    `The <b>y-axis line is off by default</b>: its distance fails (hundreds of cm) and would dominate every median. Switch it on under <i>Lines</i>; its direction is fine.`,
+    `Excluded from the statistics: ${ex || "none"}. Tick <i>show excluded</i> to include them.`,
+    `Thresholds of the capability classes are yours to choose (no target was fixed in advance); the sliders change every view.`,
+    `Click any marker, heatmap cell or table row to open the point inspector with every chirp and every placement (redos included).`
+  ].map(t => `<li>${t}</li>`).join("");
+}
+
+/* ------------------------------------------------------------------ 3D */
+const BOX = {room: [[-60, 300], [-60, 300], [-10, 260]], wide: [[-300, 800], [-300, 800], [-10, 700]]};
+const inBox = p => { if (S.viewBox === "all") return true; const b = BOX[S.viewBox]; return p[0] >= b[0][0] && p[0] <= b[0][1] && p[1] >= b[1][0] && p[1] <= b[1][1] && p[2] >= b[2][0] && p[2] <= b[2][1]; };
+function colorFor(st, e) {
+  if (S.colorBy === "series") return null;
+  if (S.colorBy === "height") return st.pt.h;
+  if (S.colorBy === "regime") return css(REG[st.regime][1]);
+  if (!e) return Math.log10(Math.max(S.colorBy === "pos" ? st.posMean : st.dirMed, 0.05));
+  const s = sol(e);
+  if (S.colorBy === "pos") return okPos(s.pos) ? Math.log10(Math.max(dist(s.pos, st.truth), 0.05)) : null;
+  return Math.log10(Math.max(angle(unit(s.az, s.el), st.truth.map(v => v / norm(st.truth))), 0.05));
+}
+function colorMarker(base, vals, showScale) {
+  if (S.colorBy === "series") return Object.assign(base, {color: base.color});
+  if (S.colorBy === "regime") return Object.assign(base, {color: vals});
+  const m = Object.assign(base, {color: vals, colorscale: seqScale(), showscale: !!showScale});
+  if (S.colorBy === "height") Object.assign(m, {cmin: 10, cmax: 170, colorbar: {title: {text: "z [cm]", font: {color: css("--text2")}}, tickfont: {color: css("--text2")}, len: .5, thickness: 12}});
+  else {
+    const tv = S.colorBy === "pos" ? [1, 2, 5, 10, 20, 50, 100, 200, 500] : [0.2, 0.5, 1, 2, 5, 10, 20];
+    Object.assign(m, {cmin: Math.log10(tv[0]), cmax: Math.log10(tv[tv.length - 1]),
+      colorbar: {title: {text: S.colorBy === "pos" ? "3D error [cm]" : "dir. error [°]", font: {color: css("--text2")}},
+        tickvals: tv.map(Math.log10), ticktext: tv.map(String), tickfont: {color: css("--text2")}, len: .5, thickness: 12}});
+  }
+  return m;
+}
+function render3D() {
+  const T = [], L = S.layers, R = rows(), ser = visSeries();
+  let hidden = 0, scaleShown = false;
+  const tr = (o) => T.push(Object.assign({type: "scatter3d"}, o));
+  const micsOf = s => S.sol === "esp" ? s.mics_run_cm : s.mics_host_cm;
+  // scene objects
+  if (L.floor) { const b = S.viewBox === "all" ? [[-100, 400], [-100, 400]] : BOX[S.viewBox];
+    T.push({type: "surface", name: "floor", x: [b[0][0], b[0][1]], y: [b[1][0], b[1][1]], z: [[-4, -4], [-4, -4]], showscale: false,
+      colorscale: [[0, css("--surface3")], [1, css("--surface3")]], opacity: .55, hoverinfo: "skip", showlegend: false, lighting: {ambient: 1}}); }
+  if (L.blind) { const b = S.viewBox === "all" ? [[-100, 400], [-100, 400], [-4, 300]] : BOX[S.viewBox];
+    const c = [[0, css("--crit")], [1, css("--crit")]];
+    T.push({type: "surface", name: "blind plane x=0", x: [[0, 0], [0, 0]], y: [[b[1][0], b[1][1]], [b[1][0], b[1][1]]], z: [[-4, -4], [b[2][1], b[2][1]]], showscale: false, colorscale: c, opacity: .12, hoverinfo: "name", showlegend: false});
+    T.push({type: "surface", name: "blind plane y=0", x: [[b[0][0], b[0][1]], [b[0][0], b[0][1]]], y: [[0, 0], [0, 0]], z: [[-4, -4], [b[2][1], b[2][1]]], showscale: false, colorscale: c, opacity: .12, hoverinfo: "name", showlegend: false}); }
+  if (L.area) { const xs = [0, 0], ys = [0, 200], zs = [-4, -4];
+    for (let a = 90; a >= 45; a -= 3) { xs.push(200 * Math.cos(rad(a))); ys.push(200 * Math.sin(rad(a))); zs.push(-4); }
+    xs.push(0); ys.push(0); zs.push(-4);
+    tr({mode: "lines", name: "free area (≈2 m)", x: xs, y: ys, z: zs, line: {color: css("--axis"), width: 3, dash: "dash"}, hoverinfo: "name", showlegend: false}); }
+  if (L.axes) { const a = 60, c = css("--text3");
+    for (const [v, n] of [[[a, 0, 0], "x"], [[0, a, 0], "y"], [[0, 0, a], "z"]])
+      tr({mode: "lines+text", x: [0, v[0]], y: [0, v[1]], z: [0, v[2]], text: ["", n], textfont: {color: c, size: 13}, line: {color: c, width: 4}, hoverinfo: "skip", showlegend: false}); }
+  if (L.fraun) for (const s of ser) {
+    const Rr = s.fraunhofer_cm[0], xs = [], ys = [], zs = [];
+    const push = (x, y, z) => { if (inBox([x, y, z])) { xs.push(x); ys.push(y); zs.push(z); } else { xs.push(null); ys.push(null); zs.push(null); } };
+    for (const el of [0, 20, 40, 60, 80]) { for (let az = 0; az <= 360; az += 4) push(Rr * Math.cos(rad(el)) * Math.cos(rad(az)), Rr * Math.cos(rad(el)) * Math.sin(rad(az)), Rr * Math.sin(rad(el))); xs.push(null); ys.push(null); zs.push(null); }
+    for (let az = 0; az < 360; az += 30) { for (let el = 0; el <= 90; el += 4) push(Rr * Math.cos(rad(el)) * Math.cos(rad(az)), Rr * Math.cos(rad(el)) * Math.sin(rad(az)), Rr * Math.sin(rad(el))); xs.push(null); ys.push(null); zs.push(null); }
+    tr({mode: "lines", name: `Fraunhofer ${s.id} (${fmt(Rr, 0)} cm)`, x: xs, y: ys, z: zs, line: {color: sc(s.id), width: 1.5}, opacity: .45, hoverinfo: "name", showlegend: false}); }
+  if (L.mics) for (const s of ser) {
+    const m = micsOf(s), c = sc(s.id);
+    tr({mode: "lines+markers" + (s.side_cm >= 20 ? "+text" : ""), name: `mics ${s.id}`, x: [...m.map(p => p[0]), m[0][0]], y: [...m.map(p => p[1]), m[0][1]], z: [...m.map(p => p[2]), m[0][2]],
+       text: ["M1", "M2", "M3", "M4", ""], textposition: "top center", textfont: {size: 10, color: c},
+       line: {color: c, width: 5}, marker: {size: 4, color: c}, hovertemplate: `${s.side_cm} cm array<br>%{text} (%{x:.1f}, %{y:.1f}) cm<extra></extra>`, showlegend: false}); }
+  // ground truth
+  const pts = visPoints().filter(p => R.some(r => r.pid === p.id));
+  if (L.truth) tr({mode: "markers" + (L.labels ? "+text" : ""), name: "truth", x: pts.map(p => p.truth[0]), y: pts.map(p => p.truth[1]), z: pts.map(p => p.truth[2]),
+      text: pts.map(p => p.id.replace("z", "").replace("-", " ")), textposition: "top center", textfont: {size: 10, color: css("--text2")},
+      customdata: pts.map(p => [p.id]), marker: {symbol: "diamond", size: 4, color: css("--truth"), line: {color: css("--surface"), width: 1}},
+      hovertemplate: pts.map(p => `<b>${p.id}</b> ${p.name}, z ${p.h} cm<br>truth (${p.truth.join(", ")}) cm<br>r ${p.r} cm · az ${p.az}° · el ${p.el}°<extra>truth</extra>`), showlegend: true});
+  if (L.truerays) { const xs = [], ys = [], zs = []; for (const p of pts) { xs.push(0, p.truth[0], null); ys.push(0, p.truth[1], null); zs.push(0, p.truth[2], null); }
+    tr({mode: "lines", name: "true directions", x: xs, y: ys, z: zs, line: {color: css("--axis"), width: 2, dash: "dot"}, hoverinfo: "skip", showlegend: false}); }
+  // measurements per series
+  for (const s of ser) {
+    const list = R.filter(r => r.ser === s.id), c = sc(s.id), sym = S3D_SYM[s.idx % 4];
+    if (L.cloud) {
+      const x = [], y = [], z = [], cd = [], col = [], ht = [];
+      for (const st of list) for (const e of st.pl.ev) {
+        if (!e.ok && !(S.chirps === "all")) continue;
+        if (!e.ok && !L.rejected) continue;
+        const p = sol(e).pos; if (!okPos(p)) continue;
+        if (!inBox(p)) { hidden++; continue; }
+        x.push(p[0]); y.push(p[1]); z.push(p[2]); cd.push([st.pid, s.id]); col.push(colorFor(st, e));
+        ht.push(`<b>${st.pid}</b> ${st.pt.name} · ${s.id} chirp ${e.n}${e.ok ? "" : " (rejected)"}<br>(${p.map(v => v.toFixed(1)).join(", ")}) cm<br>error ${dist(p, st.truth).toFixed(1)} cm · q ${fmt(e.q, 3)} · misfit ${fmt(e.mis, 1)} µs`);
+      }
+      const show = S.colorBy !== "series" && S.colorBy !== "regime" && !scaleShown; if (show && x.length) scaleShown = true;
+      tr({mode: "markers", name: `${s.side_cm} cm chirps`, legendgroup: s.id, x, y, z, customdata: cd, hovertext: ht, hoverinfo: "text",
+          marker: colorMarker({size: S.ptSize, color: c, opacity: S.ptOp, symbol: sym}, col, show && x.length)});
+    }
+    if (L.median || L.vectors || L.dirrays) {
+      const ok = list.filter(st => st.medPos && okPos(st.medPos));
+      if (L.vectors) { const V = [[], [], []], C = [[], [], []];
+        for (const st of ok) { let m = st.medPos, tgt = V;
+          if (!inBox(m)) { const t = st.truth, d = m.map((v, i) => v - t[i]), f = clipFactor(t, d); m = t.map((v, i) => v + d[i] * f); tgt = C; }
+          for (let i = 0; i < 3; i++) tgt[i].push(st.truth[i], m[i], null); }
+        tr({mode: "lines", name: `${s.side_cm} cm error vectors`, legendgroup: s.id, x: V[0], y: V[1], z: V[2], line: {color: c, width: 3}, hoverinfo: "skip", showlegend: false});
+        if (C[0].length) tr({mode: "lines", name: `${s.side_cm} cm error vectors (cut at the box)`, legendgroup: s.id, x: C[0], y: C[1], z: C[2], line: {color: c, width: 2, dash: "dot"}, opacity: .5, hoverinfo: "skip", showlegend: false}); }
+      if (L.dirrays) { const xs = [], ys = [], zs = [];
+        for (const st of ok) { const r = norm(st.truth); xs.push(0, st.medDir[0] * r, null); ys.push(0, st.medDir[1] * r, null); zs.push(0, st.medDir[2] * r, null); }
+        tr({mode: "lines", name: `${s.side_cm} cm measured directions`, legendgroup: s.id, x: xs, y: ys, z: zs, line: {color: c, width: 2}, opacity: .8, hoverinfo: "skip", showlegend: false}); }
+      if (L.median) { const vis = ok.filter(st => { if (inBox(st.medPos)) return true; hidden++; return false; });
+        const show = S.colorBy !== "series" && S.colorBy !== "regime" && !scaleShown; if (show && vis.length) scaleShown = true;
+        tr({mode: "markers", name: `${s.side_cm} cm median`, legendgroup: s.id, x: vis.map(st => st.medPos[0]), y: vis.map(st => st.medPos[1]), z: vis.map(st => st.medPos[2]),
+          customdata: vis.map(st => [st.pid, s.id]),
+          hovertemplate: vis.map(st => `<b>${st.pid}</b> ${st.pt.name}, z ${st.pt.h} cm · <b>${s.id}</b><br>median (${st.medPos.map(v => v.toFixed(1)).join(", ")}) cm<br>3D error ${fmt(st.posMean, 1)} cm (p95 ${fmt(st.posP95, 1)}) · distance ${fmt(st.rangeMed, 1)} cm<br>direction ${fmt(st.dirMed, 2)}° · accepted ${st.okN}/${st.played}<extra></extra>`),
+          marker: colorMarker({size: 6, color: c, symbol: sym, line: {color: css("--surface"), width: 1}}, vis.map(st => colorFor(st)), show && vis.length)}); }
+    }
+  }
+  const b = BOX[S.viewBox];
+  const sceneAxis = (t, r) => ({title: {text: t, font: {color: css("--text2")}}, range: r, backgroundcolor: css("--surface"), gridcolor: css("--grid"), zerolinecolor: css("--axis"),
+                                showbackground: true, tickfont: {color: css("--text2"), size: 10}, color: css("--text2")});
+  const scene = S.viewBox === "all"
+    ? {xaxis: sceneAxis("x [cm]"), yaxis: sceneAxis("y [cm]"), zaxis: sceneAxis("z [cm]"), aspectmode: "data"}
+    : {xaxis: sceneAxis("x [cm]", b[0]), yaxis: sceneAxis("y [cm]", b[1]), zaxis: sceneAxis("z [cm]", b[2]), aspectmode: "manual",
+       aspectratio: {x: 1, y: (b[1][1] - b[1][0]) / (b[0][1] - b[0][0]), z: (b[2][1] - b[2][0]) / (b[0][1] - b[0][0])}};
+  const el = plot("plot3d", T, baseLayout({margin: {l: 0, r: 0, t: 0, b: 0}, scene: Object.assign(scene, {uirevision: "keep", camera: cam3d}),
+    uirevision: "keep", legend: {orientation: "h", x: 0, y: 1, yanchor: "top", bgcolor: "rgba(0,0,0,0)"}, showlegend: true}));
+  onClickInspect(el);
+  el.removeAllListeners && el.removeAllListeners("plotly_relayout");
+  el.on("plotly_relayout", ev => { if (ev["scene.camera"]) cam3d = ev["scene.camera"]; });
+  document.getElementById("hidden3d").textContent = hidden ? `${hidden} measured positions lie outside the view box and are hidden (mostly y-axis points, whose distance fails). Choose a wider box to see them.` : "";
+}
+let cam3d = {eye: {x: -1.35, y: -1.55, z: 0.95}, center: {x: 0, y: 0, z: -0.15}};
+const CAMS = {iso: {eye: {x: -1.35, y: -1.55, z: 0.95}, center: {x: 0, y: 0, z: -0.15}, up: {x: 0, y: 0, z: 1}},
+  top: {eye: {x: 0, y: 0, z: 2.4}, center: {x: 0, y: 0, z: 0}, up: {x: 0, y: 1, z: 0}},
+  side: {eye: {x: 2.4, y: 0, z: 0.05}, center: {x: 0, y: 0, z: 0}, up: {x: 0, y: 0, z: 1}},
+  ray: {eye: {x: -1.6, y: -1.6, z: 0.25}, center: {x: 0, y: 0, z: 0}, up: {x: 0, y: 0, z: 1}}};
+function clipFactor(t, d) { // largest f in [0,1] with t + f d inside the box
+  const b = BOX[S.viewBox]; let f = 1;
+  for (let i = 0; i < 3; i++) { if (d[i] > 0) f = Math.min(f, (b[i][1] - t[i]) / d[i]); else if (d[i] < 0) f = Math.min(f, (b[i][0] - t[i]) / d[i]); }
+  return Math.max(0, f);
+}
+
+/* ----------------------------------------------------- distance facets */
+function facet(nr, nc, gx = 0.03, gy = 0.07) {
+  const W = (1 - gx * (nc - 1)) / nc, H = (1 - gy * (nr - 1)) / nr, L = {}, ax = (r, c) => r * nc + c + 1;
+  const nm = k => k > 1 ? String(k) : "";
+  return {W, H, ax, nm, L,
+    x: (r, c) => "x" + nm(ax(r, c)), y: (r, c) => "y" + nm(ax(r, c)),
+    setX: (r, c, o) => L["xaxis" + nm(ax(r, c))] = Object.assign(o, {domain: [c * (W + gx), c * (W + gx) + W], anchor: "y" + nm(ax(r, c))}, r > 0 ? {matches: "x" + nm(ax(0, c))} : {}),
+    setY: (r, c, o) => L["yaxis" + nm(ax(r, c))] = Object.assign(o, {domain: [1 - (r * (H + gy) + H), 1 - r * (H + gy)], anchor: "x" + nm(ax(r, c))}, c > 0 ? {matches: "y" + nm(ax(r, 0))} : {}),
+    colX: c => [c * (W + gx), c * (W + gx) + W]};
+}
+function renderDist() {
+  const R = rows(), ser = visSeries(), hs = HEIGHTS.filter(h => S.heights.has(h));
+  const metrics = [["posMean", "3D error [cm]", true], ["dirMed", "direction [°]", true], ["okRate", "success [%]", false]];
+  const F = facet(metrics.length, hs.length), T = [], shapes = [], ann = [];
+  const xmax = Math.max(320, ...R.map(r => r.pt.r + 10));
+  hs.forEach((h, c) => {
+    metrics.forEach(([k, label, lg], r) => {
+      F.setX(r, c, axis({range: [0, xmax], showticklabels: r === metrics.length - 1, title: {text: r === metrics.length - 1 ? "distance [cm]" : ""}}));
+      F.setY(r, c, lg ? logAxis({_lo: k === "posMean" ? 1 : 0.1, _hi: k === "posMean" ? 1000 : 50, range: k === "posMean" ? [0, 3] : [-1, 1.5], showticklabels: c === 0, title: {text: c === 0 ? label : ""}})
+                      : axis({range: [-3, 105], showticklabels: c === 0, title: {text: c === 0 ? label : ""}}));
+      for (const s of ser) for (const [line] of LINES) {
+        if (!S.lines.has(line)) continue;
+        const pts = R.filter(x => x.ser === s.id && x.pt.h === h && x.pt.line === line && (k === "okRate" || isF(x[k]))).sort((a, b) => a.pt.r - b.pt.r);
+        if (!pts.length) continue;
+        T.push({type: "scatter", mode: line === "M" ? "markers" : "lines+markers", xaxis: F.x(r, c), yaxis: F.y(r, c), legendgroup: s.id,
+          name: `${s.side_cm} cm`, showlegend: false, x: pts.map(p => p.pt.r), y: pts.map(p => k === "okRate" ? p.okRate * 100 : p[k]),
+          customdata: pts.map(p => [p.pid, s.id]),
+          hovertemplate: pts.map(p => `<b>${p.pid}</b> ${p.pt.name} · ${s.id}<br>r ${p.pt.r} cm · el ${p.pt.el}°<br>3D ${fmt(p.posMean)} cm · dir ${fmt(p.dirMed, 2)}° · ok ${fmt(p.okRate * 100, 0)} %<extra></extra>`),
+          line: {color: sc(s.id), width: 2}, marker: {symbol: LINE_SYM[line] + (line === "M" ? "-open" : ""), size: 8, color: sc(s.id), line: {width: line === "M" ? 2 : 1, color: line === "M" ? sc(s.id) : css("--surface")}}});
+      }
+      if (r === 0) for (const s of ser) if (s.fraunhofer_cm[0] < xmax)
+        shapes.push({type: "line", xref: F.x(r, c), yref: "paper", x0: s.fraunhofer_cm[0], x1: s.fraunhofer_cm[0], y0: 0, y1: 1, line: {color: sc(s.id), width: 1.2, dash: "dot"}, opacity: .7});
+    });
+    const d = F.colX(c);
+    ann.push({text: `<b>z = ${h} cm</b>`, x: (d[0] + d[1]) / 2, y: 1.0, xref: "paper", yref: "paper", yanchor: "bottom", showarrow: false, font: {size: 13, color: css("--text")}});
+  });
+  document.getElementById("distLegend").innerHTML = ser.map(s => `<span><span class="sw" style="background:${sc(s.id)}"></span>${s.side_cm} cm array</span>`).join("") +
+    LINES.filter(([k]) => S.lines.has(k)).map(([k, n]) => `<span>${LINE_GLYPH[k]} ${n}</span>`).join("");
+  const el = plot("pDist", T, Object.assign(baseLayout({margin: {l: 64, r: 12, t: 30, b: 50}, showlegend: false, shapes, annotations: ann}), F.L));
+  onClickInspect(el);
+  // CDF
+  const m = S.cdfMetric, ct = [];
+  for (const s of ser) {
+    let v = [];
+    for (const st of R.filter(r => r.ser === s.id)) v = v.concat(m === "pos" ? (st.perr || []) : m === "dir" ? (st.derr || []) : (st.rerr || []).map(Math.abs));
+    v.sort((a, b) => a - b);
+    if (!v.length) continue;
+    ct.push({type: "scatter", mode: "lines", name: `${s.side_cm} cm`, x: v, y: v.map((_, i) => 100 * (i + 1) / v.length), line: {color: sc(s.id), width: 2.5, shape: "hv"},
+      hovertemplate: `${s.side_cm} cm: %{y:.0f} % of chirps below %{x:.2f}<extra></extra>`});
+  }
+  plot("pCdf", ct, baseLayout({xaxis: logAxis({_lo: m === "dir" ? 0.05 : 0.5, _hi: m === "dir" ? 200 : 1000, title: {text: m === "pos" ? "3D error [cm]" : m === "dir" ? "direction error [°]" : "|distance error| [cm]"}}),
+    yaxis: axis({range: [0, 101], title: {text: "chirps [%]"}})}));
+  // elevation
+  const em = S.elMetric, et = [];
+  for (const s of ser) { const list = R.filter(r => r.ser === s.id && isF(em === "pos" ? r.posMean : r.dirMed));
+    et.push({type: "scatter", mode: "markers", name: `${s.side_cm} cm`, x: list.map(r => r.pt.el), y: list.map(r => em === "pos" ? r.posMean : r.dirMed),
+      customdata: list.map(r => [r.pid, s.id]), marker: {color: sc(s.id), size: 8, symbol: list.map(r => LINE_SYM[r.pt.line]), line: {color: css("--surface"), width: 1}},
+      hovertemplate: list.map(r => `<b>${r.pid}</b> ${r.pt.name} · ${s.id}<br>el ${r.pt.el}° · ${em === "pos" ? fmt(r.posMean) + " cm" : fmt(r.dirMed, 2) + "°"}<extra></extra>`)}); }
+  onClickInspect(plot("pElev", et, baseLayout({xaxis: axis({title: {text: "true elevation [°]"}, range: [0, 80]}),
+    yaxis: logAxis({_lo: em === "pos" ? 1 : 0.1, _hi: em === "pos" ? 1000 : 50, title: {text: em === "pos" ? "3D error [cm]" : "direction error [°]"}})})));
+}
+
+/* ----------------------------------------------------------------- map */
+function renderMap() {
+  const box = document.getElementById("mapHeights"); box.innerHTML = "";
+  for (const h of HEIGHTS) { const c = document.createElement("span"); c.className = "chip" + (S.mapH === h ? " on" : ""); c.textContent = h + " cm";
+    c.onclick = () => { S.mapH = h; dirty.add("map"); renderMap(); }; box.appendChild(c); }
+  const R = rows().filter(r => r.pt.h === S.mapH), ser = visSeries(), T = [], top = S.mapView === "top";
+  const X = p => top ? p[0] : Math.hypot(p[0], p[1]), Y = p => top ? p[1] : p[2];
+  if (top) { const xs = [0, 0], ys = [0, 200]; for (let a = 90; a >= 45; a -= 3) { xs.push(200 * Math.cos(rad(a))); ys.push(200 * Math.sin(rad(a))); } xs.push(0); ys.push(0);
+    T.push({type: "scatter", mode: "lines", x: xs, y: ys, line: {color: css("--axis"), dash: "dash", width: 1.5}, hoverinfo: "skip", showlegend: false, fill: "toself", fillcolor: "rgba(127,127,127,0.06)"});
+    for (const s of ser) { const m = S.sol === "esp" ? s.mics_run_cm : s.mics_host_cm;
+      T.push({type: "scatter", mode: "lines", x: [...m.map(p => p[0]), m[0][0]], y: [...m.map(p => p[1]), m[0][1]], line: {color: sc(s.id), width: 2}, hoverinfo: "skip", showlegend: false}); } }
+  else T.push({type: "scatter", mode: "lines", x: [-20, 400], y: [-4, -4], line: {color: css("--axis"), width: 2}, hoverinfo: "skip", showlegend: false, name: "floor"});
+  for (const s of ser) {
+    const list = R.filter(r => r.ser === s.id), c = sc(s.id);
+    if (S.mapCloud) { const x = [], y = [], cd = [];
+      for (const st of list) for (const e of st.pl.ev) { if (!e.ok && S.chirps === "ok") continue; const p = sol(e).pos; if (!okPos(p)) continue; x.push(X(p)); y.push(Y(p)); cd.push([st.pid, s.id]); }
+      T.push({type: "scattergl", mode: "markers", x, y, customdata: cd, marker: {color: c, size: 4, opacity: .35}, name: `${s.side_cm} cm chirps`, showlegend: false, hoverinfo: "skip"}); }
+    const ok = list.filter(st => st.medPos && okPos(st.medPos)), xs = [], ys = [];
+    for (const st of ok) { xs.push(X(st.truth), X(st.medPos), null); ys.push(Y(st.truth), Y(st.medPos), null); }
+    T.push({type: "scatter", mode: "lines", x: xs, y: ys, line: {color: c, width: 1.6}, hoverinfo: "skip", showlegend: false, legendgroup: s.id});
+    T.push({type: "scatter", mode: "markers", name: `${s.side_cm} cm (median)`, legendgroup: s.id, x: ok.map(st => X(st.medPos)), y: ok.map(st => Y(st.medPos)),
+      customdata: ok.map(st => [st.pid, s.id]), marker: {color: c, size: 9, symbol: ok.map(st => LINE_SYM[st.pt.line]), line: {color: css("--surface"), width: 1}},
+      hovertemplate: ok.map(st => `<b>${st.pid}</b> ${st.pt.name} · ${s.id}<br>3D ${fmt(st.posMean)} cm · distance ${fmt(st.rangeMed)} cm · dir ${fmt(st.dirMed, 2)}°<extra></extra>`)});
+  }
+  const pts = visPoints().filter(p => p.h === S.mapH);
+  T.push({type: "scatter", mode: "markers+text", name: "truth", x: pts.map(p => X(p.truth)), y: pts.map(p => Y(p.truth)), text: pts.map(p => p.id.split("-")[1]), textposition: "top right",
+    textfont: {size: 10, color: css("--text2")}, customdata: pts.map(p => [p.id]), marker: {symbol: "diamond", size: 10, color: css("--truth"), line: {color: css("--surface"), width: 1}},
+    hovertemplate: pts.map(p => `<b>${p.id}</b> ${p.name}<br>truth (${p.truth.join(", ")}) cm<extra></extra>`)});
+  const el = plot("pMap", T, baseLayout({xaxis: axis({title: {text: top ? "x [cm]" : "horizontal distance from the centre [cm]"}, range: top ? [-80, 300] : [-10, 340], zeroline: true, constrain: "domain"}),
+    yaxis: axis({title: {text: top ? "y [cm]" : "z [cm]"}, range: top ? [-60, 300] : [-20, 260], scaleanchor: "x", scaleratio: 1, zeroline: true}), uirevision: S.mapView}));
+  onClickInspect(el);
+}
+
+/* ---------------------------------------------------------------- bias */
+function renderBias() {
+  const R = rows(), ser = visSeries();
+  const rel = S.biasUnit === "rel";
+  onClickInspect(plot("pBias", ser.map(s => { const l = R.filter(r => r.ser === s.id && isF(r.rangeMed) && r.pt.line !== "Y");
+    return {type: "scatter", mode: "markers", name: `${s.side_cm} cm`, x: l.map(r => r.pt.r), y: l.map(r => rel ? r.rangeRel : r.rangeMed), customdata: l.map(r => [r.pid, s.id]),
+      marker: {color: sc(s.id), size: 8, symbol: l.map(r => LINE_SYM[r.pt.line]), line: {color: css("--surface"), width: 1}},
+      hovertemplate: l.map(r => `<b>${r.pid}</b> ${r.pt.name} · ${s.id}<br>r ${r.pt.r} cm · el ${r.pt.el}°<br>distance error ${fmt(r.rangeMed)} cm (${fmt(r.rangeRel, 0)} %)<extra></extra>`)}; }),
+    baseLayout({xaxis: axis({title: {text: "true distance [cm]"}}), yaxis: axis({title: {text: rel ? "distance error [% of distance]" : "distance error [cm]"}, zeroline: true, zerolinewidth: 2}),
+      annotations: [{text: "y-axis points left out (blind plane)", xref: "paper", yref: "paper", x: 1, y: 0, xanchor: "right", yanchor: "bottom", showarrow: false, font: {size: 11, color: css("--text3")}}]})));
+  // geom
+  const gt = [];
+  for (const k of [1, 3, 10, 30]) gt.push({type: "scatter", mode: "lines+text", x: [0.3, 3000], y: [0.3 * k, 3000 * k], text: ["", ""], line: {color: css("--axis"), width: 1, dash: "dot"}, hoverinfo: "skip", showlegend: false});
+  for (const s of ser) { const l = R.filter(r => r.ser === s.id && isF(r.posMean) && isF(r.pt.geom[s.id]));
+    gt.push({type: "scatter", mode: "markers", name: `${s.side_cm} cm`, x: l.map(r => r.pt.geom[s.id]), y: l.map(r => r.posMean), customdata: l.map(r => [r.pid, s.id]),
+      marker: {color: sc(s.id), size: 8, symbol: l.map(r => LINE_SYM[r.pt.line]), line: {color: css("--surface"), width: 1}},
+      hovertemplate: l.map(r => `<b>${r.pid}</b> · ${s.id}<br>geometry ${fmt(r.pt.geom[s.id], 1)} cm/µs · measured ${fmt(r.posMean)} cm<br>≈ ${fmt(r.posMean / r.pt.geom[s.id], 1)} µs effective<extra></extra>`)}); }
+  const ann = [1, 3, 10, 30].map(k => ({x: Math.log10(Math.min(800 / k, 400)), y: Math.log10(Math.min(800 / k, 400) * k), text: k + " µs", showarrow: false, font: {size: 10, color: css("--text3")}, xanchor: "left", yanchor: "bottom"}));
+  onClickInspect(plot("pGeom", gt, baseLayout({xaxis: logAxis({_lo: 0.5, _hi: 2000, title: {text: "geometric sensitivity [cm per µs]"}, range: [Math.log10(0.4), Math.log10(1500)]}),
+    yaxis: logAxis({_lo: 1, _hi: 1000, title: {text: "measured 3D error [cm]"}, range: [0, 3]}), annotations: ann})));
+  // az/el
+  onClickInspect(plot("pAzEl", ser.map(s => { const l = R.filter(r => r.ser === s.id && isF(r.azErr) && r.pt.h > 10);
+    return {type: "scatter", mode: "markers", name: `${s.side_cm} cm`, x: l.map(r => r.azErr), y: l.map(r => r.elErr), customdata: l.map(r => [r.pid, s.id]),
+      marker: {color: sc(s.id), size: 8, symbol: l.map(r => LINE_SYM[r.pt.line]), line: {color: css("--surface"), width: 1}},
+      hovertemplate: l.map(r => `<b>${r.pid}</b> · ${s.id}<br>azimuth ${fmt(r.azErr, 2)}° · elevation ${fmt(r.elErr, 2)}°<extra></extra>`)}; }),
+    baseLayout({xaxis: axis({title: {text: "azimuth error [°] (measured − true)"}, zeroline: true, zerolinewidth: 2}), yaxis: axis({title: {text: "elevation error [°]"}, zeroline: true, zerolinewidth: 2}),
+      annotations: [{text: "z = 10 cm left out", xref: "paper", yref: "paper", x: 1, y: 0, xanchor: "right", yanchor: "bottom", showarrow: false, font: {size: 11, color: css("--text3")}}]})));
+  onClickInspect(plot("pAz", ser.map(s => { const l = R.filter(r => r.ser === s.id && isF(r.dirMed));
+    return {type: "scatter", mode: "markers", name: `${s.side_cm} cm`, x: l.map(r => r.pt.az), y: l.map(r => r.dirMed), customdata: l.map(r => [r.pid, s.id]),
+      marker: {color: sc(s.id), size: 8, symbol: l.map(r => LINE_SYM[r.pt.line]), line: {color: css("--surface"), width: 1}},
+      hovertemplate: l.map(r => `<b>${r.pid}</b> · ${s.id}<br>az ${r.pt.az}° · z ${r.pt.h} cm · dir error ${fmt(r.dirMed, 2)}°<extra></extra>`)}; }),
+    baseLayout({xaxis: axis({title: {text: "true azimuth [°]"}, range: [40, 95]}), yaxis: logAxis({_lo: 0.1, _hi: 50, title: {text: "direction error [°]"}})})));
+}
+
+/* --------------------------------------------------------- reliability */
+function renderRel() {
+  const ser = visSeries(), pts = visPoints().slice().sort((a, b) => a.h - b.h || "YDM".indexOf(a.line) - "YDM".indexOf(b.line) || a.r - b.r);
+  const m = S.hmMetric, z = [], txt = [], cd = [];
+  for (const p of pts) { const zr = [], tr = [], cr = [];
+    for (const s of ser) { const st = stats(s.id, p.id); const hide = !st || (st.excluded && !S.showExcl);
+      let v = hide ? null : m === "ok" ? st.okRate * 100 : m === "pos" ? st.posMean : m === "dir" ? st.dirMed : st.rangeMed;
+      zr.push(isF(v) ? (m === "ok" || m === "range" ? v : Math.log10(Math.max(v, 0.05))) : null);
+      tr.push(hide ? (st && st.excluded ? "excl." : "") : isF(v) ? (m === "ok" ? v.toFixed(0) : m === "dir" ? v.toFixed(2) : v.toFixed(0)) : "–"); cr.push([p.id, s.id]); }
+    z.push(zr); txt.push(tr); cd.push(cr); }
+  let cs = seqScale(), zmin, zmax;
+  if (m === "ok") { cs = cs.map(([p], i, a) => [p, a[a.length - 1 - i][1]]); zmin = 0; zmax = 100; }
+  else if (m === "pos") { zmin = 0; zmax = 2.7; } else if (m === "dir") { zmin = -1; zmax = 1.3; }
+  else { const neg = isDark() ? "#e66767" : "#d03b3b", pos = isDark() ? "#3987e5" : "#2a78d6", mid = css("--surface2");
+    cs = [[0, neg], [0.5, mid], [1, pos]]; zmin = -200; zmax = 200; }
+  const el = plot("pHeat", [{type: "heatmap", z, x: ser.map(s => s.side_cm + " cm"), y: pts.map(p => `${p.id}`), text: txt, texttemplate: "%{text}", textfont: {size: 10},
+    customdata: cd, colorscale: cs, zmin, zmax, showscale: false, xgap: 2, ygap: 1,
+    hovertemplate: "%{y} · %{x}: %{text}<extra></extra>"}],
+    baseLayout({margin: {l: 90, r: 10, t: 48, b: 20}, height: Math.max(500, 15 * pts.length + 80), xaxis: axis({side: "top", ticks: "", showline: false}),
+      yaxis: axis({autorange: "reversed", ticks: "", showline: false, tickfont: {size: 10, color: css("--text2")}})}));
+  onClickInspect(el);
+  // q vs misfit
+  const R = rows(), qt = [];
+  for (const s of ser) for (const okv of [true, false]) {
+    const x = [], y = [], cd2 = [];
+    for (const st of R.filter(r => r.ser === s.id)) for (const e of st.pl.ev) if (e.ok === okv && isF(e.mis) && isF(e.q)) { x.push(Math.max(e.mis, 0.05)); y.push(e.q); cd2.push([st.pid, s.id]); }
+    qt.push({type: "scattergl", mode: "markers", name: `${s.side_cm} cm ${okv ? "accepted" : "rejected"}`, x, y, customdata: cd2, legendgroup: s.id,
+      marker: {color: sc(s.id), size: okv ? 4 : 6, opacity: okv ? .35 : .85, symbol: okv ? "circle" : "x"},
+      hovertemplate: `%{customdata[0]} · ${s.id}<br>misfit %{x:.1f} µs · q %{y:.3f}<extra>${okv ? "accepted" : "rejected"}</extra>`});
+  }
+  document.getElementById("thMis").textContent = D.meta.max_misfit_us; document.getElementById("thQ").textContent = D.meta.min_quality;
+  onClickInspect(plot("pQM", qt, baseLayout({xaxis: logAxis({_lo: 0.1, _hi: 2000, title: {text: "misfit of the six delays [µs]"}}), yaxis: axis({title: {text: "matched-filter quality q"}}),
+    shapes: [{type: "line", xref: "x", yref: "paper", x0: D.meta.max_misfit_us, x1: D.meta.max_misfit_us, y0: 0, y1: 1, line: {color: css("--crit"), dash: "dash", width: 1.5}},
+             {type: "line", xref: "paper", yref: "y", x0: 0, x1: 1, y0: D.meta.min_quality, y1: D.meta.min_quality, line: {color: css("--crit"), dash: "dash", width: 1.5}}]})));
+  onClickInspect(plot("pOkDist", ser.map(s => { const l = R.filter(r => r.ser === s.id);
+    return {type: "scatter", mode: "markers", name: `${s.side_cm} cm`, x: l.map(r => r.pt.r), y: l.map(r => r.okRate * 100), customdata: l.map(r => [r.pid, s.id]),
+      marker: {color: sc(s.id), size: 8, symbol: l.map(r => LINE_SYM[r.pt.line]), line: {color: css("--surface"), width: 1}, opacity: .85},
+      hovertemplate: l.map(r => `<b>${r.pid}</b> · ${s.id}<br>z ${r.pt.h} cm · r ${r.pt.r} cm · ${r.okN}/${r.played} accepted<extra></extra>`)}; }),
+    baseLayout({xaxis: axis({title: {text: "true distance [cm]"}}), yaxis: axis({title: {text: "success [%]"}, range: [-3, 105]})})));
+  const lm = S.lvlMetric;
+  onClickInspect(plot("pLvl", ser.map(s => { const l = R.filter(r => r.ser === s.id);
+    return {type: "scatter", mode: "markers", name: `${s.side_cm} cm`, x: l.map(r => r.pt.r), y: l.map(r => lm === "lvl" ? r.lvl : r.snr), customdata: l.map(r => [r.pid, s.id]),
+      marker: {color: sc(s.id), size: 8, symbol: l.map(r => LINE_SYM[r.pt.line]), line: {color: css("--surface"), width: 1}},
+      hovertemplate: l.map(r => `<b>${r.pid}</b> · ${s.id}<br>level ${fmt(r.lvl)} dB · SNR ${fmt(r.snr, 0)} · success ${fmt(r.okRate * 100, 0)} %<extra></extra>`)}; }),
+    baseLayout({xaxis: axis({title: {text: "true distance [cm]"}}), yaxis: lm === "lvl" ? axis({title: {text: "received level [dB]"}}) : logAxis({_lo: 1, _hi: 5000, title: {text: "SNR"}})})));
+}
+
+/* --------------------------------------------------------------- table */
+const COLS = [["ser", "array", 0, "l"], ["pid", "point", 0, "l"], ["name", "name", 0, "l"], ["line", "line", 0, "l"], ["h", "z [cm]", 0], ["r", "r [cm]", 1], ["az", "az [°]", 1], ["el", "el [°]", 1],
+  ["okN", "ok", 0], ["okp", "ok %", 0], ["posMean", "3D mean", 1], ["posP95", "3D p95", 1], ["rangeMed", "dist. err", 1], ["rangeRel", "dist. %", 0], ["dirMed", "dir med", 2], ["dirP95", "dir p95", 2],
+  ["azErr", "az err", 2], ["elErr", "el err", 2], ["spread", "spread", 1], ["geom", "geom cm/µs", 1], ["lvl", "level dB", 1], ["snr", "SNR", 0], ["regime", "class", 0, "l"]];
+function tableRows() {
+  const f = S.filter.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  return rows({keepExcluded: true}).filter(st => S.showExcl || !st.excluded).map(st => ({st, ser: st.ser, pid: st.pid, name: st.pt.name, line: st.pt.line, h: st.pt.h, r: st.pt.r, az: st.pt.az, el: st.pt.el,
+    okN: st.okN, okp: st.okRate * 100, posMean: st.posMean, posP95: st.posP95, rangeMed: st.rangeMed, rangeRel: st.rangeRel, dirMed: st.dirMed, dirP95: st.dirP95, azErr: st.azErr, elErr: st.elErr,
+    spread: st.spread, geom: st.pt.geom[st.ser], lvl: st.lvl, snr: st.snr, regime: REG[st.regime][0]}))
+    .filter(r => f.every(w => `${r.ser} ${r.pid} ${r.name} ${r.regime}`.toLowerCase().includes(w)));
+}
+function renderTable() {
+  const data = tableRows(), k = S.sort.k, d = S.sort.dir;
+  data.sort((a, b) => { const x = a[k], y = b[k]; if (typeof x === "string") return d * x.localeCompare(y);
+    return d * ((isF(x) ? x : Infinity) - (isF(y) ? y : Infinity)) || a.h - b.h || a.r - b.r; });
+  const t = document.getElementById("tbl");
+  t.innerHTML = `<thead><tr>${COLS.map(([key, lab, , al]) => `<th data-k="${key}" class="${al || ""}">${lab}${key === k ? (d > 0 ? " ▲" : " ▼") : ""}</th>`).join("")}</tr></thead><tbody>${
+    data.map(r => `<tr data-p="${r.pid}" data-s="${r.ser}" class="${r.st.excluded ? "exc" : ""}">${COLS.map(([key, , nd, al]) => {
+      let v = r[key];
+      if (key === "ser") v = `<span class="sw" style="background:${sc(r.ser)}"></span>${r.ser}`;
+      else if (key === "regime") v = `<span class="tag"><i style="background:${css(REG[r.st.regime][1])}"></i>${v}</span>`;
+      else if (typeof v === "number") v = isF(v) ? v.toFixed(nd) : (v === Infinity ? "∞" : "–");
+      else if (v == null) v = (key === "geom" ? "∞" : "–");
+      return `<td class="${al || ""}">${v}</td>`; }).join("")}</tr>`).join("")}</tbody>`;
+  t.querySelectorAll("th").forEach(th => th.onclick = () => { const kk = th.dataset.k; S.sort = {k: kk, dir: S.sort.k === kk ? -S.sort.dir : 1}; renderTable(); });
+  t.querySelectorAll("tbody tr").forEach(tr => tr.onclick = () => openInspector(tr.dataset.p, tr.dataset.s));
+  document.getElementById("tblNote").textContent = `${data.length} rows. 3D = mean 3D error, dist. err = median signed distance error, dir = direction error, spread = rms scatter of the chirp positions, geom = predicted distance uncertainty per µs of timing noise (∞ in a blind plane). Values follow the Solution and Chirps settings.`;
+}
+function csvDownload(name, header, lines) {
+  const esc = v => { if (v == null) return ""; const s = String(v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const blob = new Blob([[header, ...lines].map(r => r.map(esc).join(",")).join("\n")], {type: "text/csv"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* ---------------------------------------------------------------- about */
+function renderAbout() {
+  document.getElementById("aboutMeas").innerHTML = `<div class="kv">
+    <div>plan</div><div>${D.meta.plan}</div><div>signal</div><div>${D.meta.signal}</div>
+    <div>points</div><div>${PTS.length} (16 positions × ${HEIGHTS.length} heights)</div>
+    <div>placements</div><div>${PL.length} (incl. redos), ${EV.length} detected chirps</div>
+    <div>accept rule</div><div>misfit &lt; ${D.meta.max_misfit_us} µs and quality &gt; ${D.meta.min_quality}</div>
+    <div>host rotation</div><div>${D.meta.host_rot_deg}°</div></div>
+    <p class="note" style="margin-top:10px">${D.meta.plan_doc}</p>`;
+  document.getElementById("aboutSeries").innerHTML = SER.map(s => `<h3><span class="sw" style="background:${sc(s.id)}"></span>${s.id}: ${s.side_cm} cm</h3>
+    <div class="kv"><div>firmware</div><div><code>${s.fw || "?"}</code></div><div>code</div><div><code>${s.code_version || "?"}</code></div>
+    <div>rotation run / fit</div><div>${s.rot_run}° / ${s.rot_fit}° (${s.n_fit} chirps)</div><div>note</div><div>${s.note}</div></div>`).join("");
+  document.getElementById("aboutGen").innerHTML = `Generated ${D.meta.generated}.`;
+}
+
+/* ------------------------------------------------------------ inspector */
+let inspSer = null;
+function openInspector(pid, ser) {
+  const p = PT[pid]; if (!p) return;
+  inspSer = ser || inspSer || visSeries()[0].id;
+  document.getElementById("dTitle").textContent = `${p.id} · ${p.name}, z ${p.h} cm`;
+  document.getElementById("dSub").textContent = `truth (${p.truth.join(", ")}) cm · r ${p.r} cm · az ${p.az}° · el ${p.el}°`;
+  const sts = SER.map(s => stats(s.id, pid)).filter(Boolean);
+  const body = document.getElementById("dBody");
+  body.innerHTML = `<table class="t"><thead><tr><th class="l">array</th><th>ok</th><th>3D mean</th><th>p95</th><th>dist. err</th><th>dir med</th><th>az / el err</th><th>spread</th><th class="l">class</th></tr></thead><tbody>${
+    sts.map(st => `<tr data-s="${st.ser}" class="${st.excluded ? "exc" : ""}"><td class="l"><span class="sw" style="background:${sc(st.ser)}"></span>${st.ser}${st.excluded ? " (excluded)" : ""}</td><td>${st.okN}/${st.played}</td><td>${fmt(st.posMean)}</td><td>${fmt(st.posP95)}</td><td>${fmt(st.rangeMed)}</td><td>${fmt(st.dirMed, 2)}°</td><td>${fmt(st.azErr, 2)} / ${fmt(st.elErr, 2)}</td><td>${fmt(st.spread)}</td><td class="l"><span class="tag"><i style="background:${css(REG[st.regime][1])}"></i>${REG[st.regime][0]}</span></td></tr>`).join("")}</tbody></table>
+    ${sts.some(s => s.excluded) ? `<div class="callout">Excluded: ${sts.filter(s => s.excluded).map(s => s.ser + ": " + s.excluded).join("; ")}</div>` : ""}
+    <div class="grid g2" style="margin-top:12px"><div><h3 class="flabel">Top view (x–y)</h3><div id="iTop" style="height:300px"></div></div>
+    <div><h3 class="flabel">Along the ray (horizontal distance – z)</h3><div id="iSide" style="height:300px"></div></div></div>
+    <h3 class="flabel" style="margin-top:12px">Placements (every measurement of this point; the newest counts)</h3><div id="iPl"></div>
+    <div class="flexrow" style="margin-top:12px"><h3 class="flabel" style="margin:0">Chirps</h3><span class="seg" id="iSer">${SER.filter(s => CUR[s.id + "|" + pid]).map(s => `<button data-v="${s.id}">${s.id}</button>`).join("")}</span></div>
+    <div class="tablewrap" style="margin-top:8px;max-height:46vh"><table class="t" id="iChirps"></table></div>`;
+  body.querySelectorAll("tbody tr[data-s]").forEach(tr => tr.onclick = () => { inspSer = tr.dataset.s; renderInspChirps(pid); });
+  // plots
+  const T1 = [], T2 = [], hr = q => Math.hypot(q[0], q[1]);
+  for (const st of sts) { if (st.excluded && !S.showExcl) continue;
+    const P = st.pl.ev.filter(e => e.ok || S.chirps === "all").map(e => ({p: sol(e).pos, ok: e.ok, n: e.n})).filter(o => okPos(o.p));
+    const mk = {color: sc(st.ser), size: 7, opacity: .7, symbol: P.map(o => o.ok ? "circle" : "x")};
+    T1.push({type: "scatter", mode: "markers", name: st.ser, x: P.map(o => o.p[0]), y: P.map(o => o.p[1]), marker: mk, hovertemplate: P.map(o => `${st.ser} chirp ${o.n}${o.ok ? "" : " (rejected)"}<br>(%{x:.1f}, %{y:.1f}) cm<extra></extra>`)});
+    T2.push({type: "scatter", mode: "markers", name: st.ser, x: P.map(o => hr(o.p)), y: P.map(o => o.p[2]), marker: mk, showlegend: false, hovertemplate: P.map(o => `${st.ser} chirp ${o.n}<br>ρ %{x:.1f} cm · z %{y:.1f} cm<extra></extra>`)}); }
+  const tm = {type: "scatter", mode: "markers", name: "truth", marker: {symbol: "diamond", size: 13, color: css("--truth"), line: {color: css("--surface"), width: 1.5}}};
+  T1.push(Object.assign({x: [p.truth[0]], y: [p.truth[1]], hovertemplate: "truth<extra></extra>"}, tm));
+  T2.push(Object.assign({x: [hr(p.truth)], y: [p.truth[2]], showlegend: false, hovertemplate: "truth<extra></extra>"}, tm));
+  T2.push({type: "scatter", mode: "lines", x: [0, hr(p.truth) * 3], y: [0, p.truth[2] * 3], line: {color: css("--axis"), dash: "dot", width: 1}, hoverinfo: "skip", showlegend: false});
+  const lay = (xt, yt) => baseLayout({margin: {l: 50, r: 8, t: 8, b: 40}, xaxis: axis({title: {text: xt}}), yaxis: axis({title: {text: yt}, scaleanchor: "x", scaleratio: 1}), legend: {orientation: "h", y: 1.0, yanchor: "bottom"}});
+  Plotly.react("iTop", T1, lay("x [cm]", "y [cm]"), CFG);
+  Plotly.react("iSide", T2, lay("ρ [cm]", "z [cm]"), CFG);
+  // placements
+  const pls = PL.filter(q => q.point === pid).sort((a, b) => (a.series > b.series ? 1 : -1) || String(a.started).localeCompare(String(b.started)));
+  document.getElementById("iPl").innerHTML = `<table class="t"><thead><tr><th class="l">array</th><th class="l">file</th><th class="l">started</th><th>ok</th><th>3D mean</th><th>dir med</th><th class="l">status</th></tr></thead><tbody>${
+    pls.map(q => { const st = placementStats(q); return `<tr class="${q.excluded ? "exc" : ""}"><td class="l"><span class="sw" style="background:${sc(q.series)}"></span>${q.series}</td><td class="l"><code>${q.file}</code></td><td class="l">${(q.started || "").replace("T", " ").slice(0, 19)}</td><td>${st.okN}/${st.played}</td><td>${fmt(st.posMean)}</td><td>${fmt(st.dirMed, 2)}°</td><td class="l">${q.current ? "used" : "superseded"}${q.redo ? " · redo" : ""}${q.excluded ? " · excluded" : ""}</td></tr>`; }).join("")}</tbody></table>`;
+  renderInspChirps(pid);
+  document.getElementById("drawer").classList.add("open"); document.getElementById("drawer").setAttribute("aria-hidden", "false");
+  document.getElementById("scrim").classList.add("on");
+}
+function renderInspChirps(pid) {
+  if (!CUR[inspSer + "|" + pid]) inspSer = SER.find(s => CUR[s.id + "|" + pid]).id;
+  const segEl = document.getElementById("iSer");
+  segEl.querySelectorAll("button").forEach(b => { b.classList.toggle("on", b.dataset.v === inspSer); b.onclick = () => { inspSer = b.dataset.v; renderInspChirps(pid); }; });
+  const pl = CUR[inspSer + "|" + pid], T = pl.truth, tu = T.map(v => v / norm(T));
+  document.getElementById("iChirps").innerHTML = `<thead><tr><th>n</th><th class="l">ok</th><th>q</th><th>misfit µs</th><th>SNR</th><th>level</th><th>arrival M1…M4 [µs]</th><th>x</th><th>y</th><th>z</th><th>3D err</th><th>az</th><th>el</th><th>dir err</th><th class="l">ESP32 (x, y, z)</th></tr></thead><tbody>${
+    pl.ev.map(e => { const s = sol(e), ok = okPos(s.pos); return `<tr><td>${e.n}</td><td class="l">${e.ok ? "✓" : "✗"}${e.clip ? " clip" : ""}</td><td>${fmt(e.q, 3)}</td><td>${fmt(e.mis, 1)}</td><td>${fmt(e.snr, 0)}</td><td>${fmt(e.lvl, 1)}</td><td>${e.arr.map(v => fmt(v, 1)).join(" / ")}</td>
+      <td>${ok ? fmt(s.pos[0]) : "–"}</td><td>${ok ? fmt(s.pos[1]) : "–"}</td><td>${ok ? fmt(s.pos[2]) : "–"}</td><td>${ok ? fmt(dist(s.pos, T)) : "–"}</td><td>${fmt(s.az, 2)}</td><td>${fmt(s.el, 2)}</td><td>${fmt(angle(unit(s.az, s.el), tu), 2)}</td>
+      <td class="l muted">${okPos(e.esp.pos) ? e.esp.pos.map(v => v.toFixed(1)).join(", ") : "–"}</td></tr>`; }).join("")}</tbody>`;
+}
+function closeInspector() {
+  document.getElementById("drawer").classList.remove("open"); document.getElementById("drawer").setAttribute("aria-hidden", "true");
+  document.getElementById("scrim").classList.remove("on");
+  ["iTop", "iSide"].forEach(id => { const el = document.getElementById(id); if (el) Plotly.purge(el); });
+}
+
+/* ---------------------------------------------------------------- init */
+function init() {
+  document.getElementById("loading").remove();
+  const ns = SER.map(s => s.id).join(", ");
+  document.getElementById("subtitle").innerHTML = `Distance series <b>${D.meta.plan}</b>: arrays ${SER.map(s => s.side_cm + " cm").join(" / ")}, ${PTS.length} points each, ${EV.length} chirps · generated ${D.meta.generated.replace("T", " ")}`;
+  applyTheme(); buildFilters();
+  seg("fSol", "sol", () => changed()); seg("fChirps", "chirps", () => changed());
+  document.getElementById("fExcl").onchange = e => { S.showExcl = e.target.checked; changed(); };
+  seg("capMetric", "capMetric", () => { dirty.add("overview"); renderTab("overview"); });
+  seg("cdfMetric", "cdfMetric", () => { dirty.add("dist"); renderTab("dist"); });
+  seg("elMetric", "elMetric", () => { dirty.add("dist"); renderTab("dist"); });
+  seg("mapView", "mapView", () => { dirty.add("map"); renderTab("map"); });
+  seg("biasUnit", "biasUnit", () => { dirty.add("bias"); renderTab("bias"); });
+  seg("hmMetric", "hmMetric", () => { dirty.add("rel"); renderTab("rel"); });
+  seg("lvlMetric", "lvlMetric", () => { dirty.add("rel"); renderTab("rel"); });
+  document.getElementById("mapCloud").onchange = e => { S.mapCloud = e.target.checked; dirty.add("map"); renderTab("map"); };
+  const th = [["rPosTh", "posTh", "vPosTh", v => v + " cm"], ["rDirTh", "dirTh", "vDirTh", v => v + "°"], ["rOkTh", "okTh", "vOkTh", v => v + " %"]];
+  for (const [r, k, lab, f] of th) { const el = document.getElementById(r); el.value = S[k]; document.getElementById(lab).textContent = f(S[k]);
+    el.oninput = () => { S[k] = +el.value; document.getElementById(lab).textContent = f(S[k]); changed(); }; }
+  document.querySelectorAll("#panel3d input[data-l]").forEach(cb => { cb.checked = S.layers[cb.dataset.l];
+    cb.onchange = () => { S.layers[cb.dataset.l] = cb.checked; if (cb.dataset.l === "rejected" && cb.checked && S.chirps === "ok") { S.chirps = "all"; document.querySelectorAll("#fChirps button").forEach(b => b.classList.toggle("on", b.dataset.v === "all")); changed(); return; } dirty.add("v3d"); renderTab("v3d"); }; });
+  const cb = document.getElementById("colorBy"); cb.value = S.colorBy; cb.onchange = () => { S.colorBy = cb.value; dirty.add("v3d"); renderTab("v3d"); };
+  const vb = document.getElementById("viewBox"); vb.value = S.viewBox; vb.onchange = () => { S.viewBox = vb.value; dirty.add("v3d"); renderTab("v3d"); };
+  for (const [r, k, lab] of [["rPt", "ptSize", "vPt"], ["rOp", "ptOp", "vOp"]]) { const el = document.getElementById(r); el.value = S[k]; document.getElementById(lab).textContent = S[k];
+    el.oninput = () => { S[k] = +el.value; document.getElementById(lab).textContent = S[k]; dirty.add("v3d"); renderTab("v3d"); }; }
+  document.querySelectorAll("[data-cam]").forEach(b => b.onclick = () => { cam3d = CAMS[b.dataset.cam]; Plotly.relayout("plot3d", {"scene.camera": cam3d}); });
+  document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => showTab(b.dataset.t));
+  document.getElementById("tblFilter").oninput = e => { S.filter = e.target.value; renderTable(); };
+  document.getElementById("btnTblCsv").onclick = () => { const d = tableRows();
+    csvDownload("array_points.csv", COLS.map(c => c[1]).concat(["excluded"]), d.map(r => COLS.map(([k]) => typeof r[k] === "number" ? (isF(r[k]) ? +r[k].toFixed(4) : "") : r[k]).concat([r.st.excluded || ""]))); };
+  document.getElementById("btnCsv").onclick = () => { const out = [];
+    for (const st of rows({keepExcluded: true})) for (const e of st.pl.ev) out.push([st.ser, st.pid, st.pt.name, st.pt.h, ...st.truth, st.pl.file, st.excluded || "", e.n, e.ok ? 1 : 0, e.q, e.mis, e.snr, e.lvl, e.clip, ...e.arr,
+      ...(e.host.pos || [null, null, null]), e.host.az, e.host.el, ...(e.esp.pos || [null, null, null]), e.esp.az, e.esp.el]);
+    csvDownload("array_chirps.csv", ["series", "point", "name", "height_cm", "truth_x", "truth_y", "truth_z", "file", "excluded", "n", "ok", "q", "misfit_us", "snr", "lvl_db", "clip",
+      "arr1_us", "arr2_us", "arr3_us", "arr4_us", "host_x", "host_y", "host_z", "host_az", "host_el", "esp_x", "esp_y", "esp_z", "esp_az", "esp_el"], out); };
+  document.getElementById("btnTheme").onclick = () => { S.theme = {auto: "light", light: "dark", dark: "auto"}[S.theme]; store.set("theme", S.theme); applyTheme(); dirty = new Set(TABS); buildFilters(); renderTab(S.tab); };
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (S.theme === "auto") { dirty = new Set(TABS); buildFilters(); renderTab(S.tab); } });
+  document.getElementById("dClose").onclick = closeInspector; document.getElementById("scrim").onclick = closeInspector;
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeInspector(); });
+  const [h, ip, is] = location.hash.slice(1).split("/");     // #tab or #tab/point/array opens the inspector
+  showTab(TABS.includes(h) ? h : TABS.includes(S.tab) ? S.tab : "overview");
+  if (ip && PT[ip]) openInspector(ip, SBY[is] ? is : undefined);
+}
+if (window.Plotly) init();
+else document.getElementById("loading").textContent = "Plotly could not be loaded (no internet?). The page needs cdnjs.cloudflare.com once.";
+</script>
+</body>
+</html>
