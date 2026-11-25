@@ -109,35 +109,6 @@ def main():
     fig.tight_layout()
     fig.savefig(OUT / "fig_range.svg"); plt.close(fig)
 
-    # ---- Fig 4: identification
-    fig, ax = plt.subplots(1, 2, figsize=(7.1, 2.05), gridspec_kw={"width_ratios": [1.45, 1]})
-    models = [("M0", "M0\nnominal"), ("M1", "M1\n+ rotation"), ("M2", "M2\n+ c"), ("M3", "M3\n+ delays"),
-              ("M5", "M5\n+ offset")]
-    w = 0.26
-    x = np.arange(len(models))
-    for i, s in enumerate(sers):
-        v = [ident[s]["models"][m]["rms_us"] for m, _ in models]
-        ax[0].bar(x + (i - 1) * w, v, w * 0.92, color=COL[s], label=LAB[s])
-        ax[0].plot([x[0] - 0.45, x[-1] + 0.45], [ident[s]["jitter_robust_us"]] * 2, color=COL[s], lw=1, ls=":")
-    ax[0].set_xticks(x, [n for _, n in models])
-    ax[0].set_ylabel("delay residual at truth [µs rms]")
-    ax[0].set_title("residual of the point-mean delays (dotted: per-chirp jitter)", fontsize=8, color=INK, loc="left")
-    ax[0].legend(fontsize=7, ncol=3, loc="upper right", bbox_to_anchor=(1, 1.02))
-    ax[0].set_ylim(0, 6.8)
-    ax[0].grid(axis="x", visible=False)
-    for i, s in enumerate(sers):
-        cv = ident[s]["cv"]
-        ax[1].bar(i - 0.18, cv["M0"][1], 0.34, color=COL[s], alpha=0.45)
-        ax[1].bar(i + 0.18, cv["M5"][1], 0.34, color=COL[s])
-        for dx, k in ((-0.18, "M0"), (0.18, "M5")):
-            ax[1].text(i + dx, cv[k][1] + 2, f"{cv[k][1]:.0f}", ha="center", fontsize=7, color=INK2)
-    ax[1].set_xticks(range(3), [LAB[s] for s in sers])
-    ax[1].set_ylabel("held-out 3D error [cm, median]")
-    ax[1].set_title("z 90/170 cm, model fitted on z 50/130 cm\npale: nominal · solid: calibrated (M5)", fontsize=8,
-                    color=INK, loc="left")
-    ax[1].grid(axis="x", visible=False)
-    fig.tight_layout(w_pad=1.5)
-    fig.savefig(OUT / "fig_identification.svg"); plt.close(fig)
     print("figures in", OUT.resolve())
 
 

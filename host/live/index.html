@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Localization</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --surface: #ffffff; --ink: #0b0b0b; --ink2: #52514e; --muted: #8a8984;
+    --line: #e4e3df; --grid: #eeede9; --axis: #a3a29c;
+    --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --rej: #a3a29c; --truth: #0b0b0b;
+    --ok: #1a7f37; --warn: #b35900; --bad: #c62828;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121211; --surface: #1b1b1a; --ink: #f1f0ec; --ink2: #b9b8b2; --muted: #85847f;
+      --line: #2e2e2b; --grid: #242422; --axis: #5d5c58;
+      --c1: #5b9bf0; --c2: #f08a5d; --c3: #3cc795; --rej: #6d6c68; --truth: #f1f0ec;
+      --ok: #4cc26b; --warn: #f0a04b; --bad: #ff6b6b;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121211; --surface: #1b1b1a; --ink: #f1f0ec; --ink2: #b9b8b2; --muted: #85847f;
+    --line: #2e2e2b; --grid: #242422; --axis: #5d5c58;
+    --c1: #5b9bf0; --c2: #f08a5d; --c3: #3cc795; --rej: #6d6c68; --truth: #f1f0ec;
+    --ok: #4cc26b; --warn: #f0a04b; --bad: #ff6b6b;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding: 12px 16px;
+    border-bottom: 1px solid var(--line); background: var(--surface); }
+  header h1 { font-size: 17px; margin: 0; font-weight: 650; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; color: var(--ink2); font-size: 13px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+  .dot.ok { background: var(--ok); } .dot.warn { background: var(--warn); } .dot.bad { background: var(--bad); }
+  .dot.pulse { animation: pulse .35s ease-out; }
+  @keyframes pulse { from { box-shadow: 0 0 0 6px color-mix(in srgb, var(--ok) 35%, transparent); } to { box-shadow: 0 0 0 0 transparent; } }
+  header .spacer { flex: 1; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+  button.primary { background: var(--c1); border-color: var(--c1); color: #fff; font-weight: 600; }
+  button.primary.on { background: var(--bad); border-color: var(--bad); }
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 16px; padding: 16px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .card h2 { font-size: 13px; font-weight: 600; color: var(--ink2); margin: 0 0 8px; text-transform: none; }
+  #mapwrap { position: relative; }
+  canvas { display: block; width: 100%; }
+  #map { aspect-ratio: 1 / 1; max-height: calc(100vh - 140px); }
+  #side { aspect-ratio: 2.6 / 1; }
+  .big { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
+  .big .v { font-size: 30px; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -0.5px; }
+  .big .k { color: var(--muted); font-size: 12px; }
+  dl { display: grid; grid-template-columns: 1fr auto; gap: 3px 12px; margin: 0; font-size: 13px; }
+  dt { color: var(--muted); } dd { margin: 0; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .ctl { display: grid; gap: 8px; }
+  .ctl label { display: flex; align-items: center; gap: 8px; color: var(--ink2); }
+  .ctl input[type=range] { flex: 1; }
+  .ctl .val { min-width: 54px; text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); }
+  .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--ink2); margin-top: 8px; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .note { color: var(--muted); font-size: 12px; margin-top: 8px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  #age { font-variant-numeric: tabular-nums; }
+  .stack { display: grid; gap: 16px; align-content: start; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Live sound-source localization</h1>
+  <span class="pill"><span class="dot" id="dEsp"></span><span id="tEsp">connecting…</span></span>
+  <span class="pill"><span class="dot" id="dPhone"></span><span id="tPhone">phone –</span></span>
+  <span class="pill"><span class="dot" id="dChirp"></span><span id="age">no chirp yet</span></span>
+  <span class="spacer"></span>
+  <button id="sound" class="primary">Start sound</button>
+  <button id="clear">Clear trail</button>
+  <button id="theme" title="Theme">◐</button>
+</header>
+<main>
+  <div class="stack">
+    <div class="card" id="mapwrap">
+      <h2>Top view — phone position = measured direction ∩ plane z = H</h2>
+      <canvas id="map"></canvas>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="card">
+      <h2>Side view along the measured azimuth</h2>
+      <canvas id="side"></canvas>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card">
+      <div class="big">
+        <div><div class="k">x</div><div class="v" id="vx">–</div></div>
+        <div><div class="k">y</div><div class="v" id="vy">–</div></div>
+        <div><div class="k">azimuth</div><div class="v" id="vaz">–</div></div>
+        <div><div class="k">elevation</div><div class="v" id="vel">–</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Measurement</h2>
+      <dl>
+        <dt>horizontal distance</dt><dd id="vd">–</dd>
+        <dt>slant distance</dt><dd id="vr">–</dd>
+        <dt>expected error (radial×tang.)</dt><dd id="vexp">–</dd>
+        <dt>spread of last chirps (1σ)</dt><dd id="vspread">–</dd>
+        <dt>plane fit − direction</dt><dd id="vdiff">–</dd>
+        <dt>ESP32 free 3D fit</dt><dd id="vesp">–</dd>
+        <dt>chirps / accepted</dt><dd id="vcnt">–</dd>
+        <dt>update rate</dt><dd id="vrate">–</dd>
+        <dt>quality q / misfit</dt><dd id="vq">–</dd>
+        <dt>level / SNR</dt><dd id="vlvl">–</dd>
+        <dt id="ttruth" hidden>demo: true point</dt><dd id="vtruth" hidden>–</dd>
+      </dl>
+    </div>
+    <div class="card ctl">
+      <h2>Settings</h2>
+      <label>height H <input type="range" id="H" min="20" max="200" step="1"><span class="val" id="Hv"></span></label>
+      <label>smoothing <input type="range" id="N" min="1" max="15" step="1" value="5"><span class="val" id="Nv"></span></label>
+      <label>view ± <input type="range" id="R" min="100" max="350" step="25" value="200"><span class="val" id="Rv"></span></label>
+      <label>trail <input type="range" id="T" min="0" max="400" step="10" value="120"><span class="val" id="Tv"></span></label>
+      <label>accept q &gt; <input type="range" id="Q" min="0.02" max="0.4" step="0.01"><span class="val" id="Qv"></span></label>
+      <label>misfit &lt; <input type="range" id="M" min="2" max="50" step="1"><span class="val" id="Mv"></span></label>
+      <label><input type="checkbox" id="useRej"> use rejected chirps too (their direction is still usable)</label>
+    </div>
+    <div class="card ctl">
+      <h2>Layers</h2>
+      <label><input type="checkbox" id="Lraw" checked> single chirps</label>
+      <label><input type="checkbox" id="Ltrail" checked> trail (smoothed)</label>
+      <label><input type="checkbox" id="Lunc" checked> expected error ellipse</label>
+      <label><input type="checkbox" id="Lray" checked> direction ray</label>
+      <label><input type="checkbox" id="Lplane"> plane fit of all 6 delays (z = H)</label>
+      <label><input type="checkbox" id="Lesp"> ESP32 free 3D fit (distance is weak)</label>
+      <label><input type="checkbox" id="Lrej" checked> rejected chirps (grey)</label>
+      <label><input type="checkbox" id="Lrings" checked> distance rings</label>
+      <div class="note" id="cfgnote"></div>
+    </div>
+  </div>
+</main>
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const DEG = Math.PI / 180;
+let CFG = null;
+const chirps = [];          // every chirp received (with derived positions)
+let truth = null, status = {}, lastRx = 0, nOk = 0;
+
+// ---------- theme
+const themes = ["auto", "light", "dark"];
+let theme = (() => { try { return localStorage.getItem("liveTheme") || "auto"; } catch (e) { return "auto"; } })();
+function applyTheme() {
+  if (theme === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", theme);
+  $("theme").textContent = { auto: "◐ auto", light: "○ light", dark: "● dark" }[theme];
+  draw();
+}
+$("theme").onclick = () => { theme = themes[(themes.indexOf(theme) + 1) % 3];
+  try { localStorage.setItem("liveTheme", theme); } catch (e) {} applyTheme(); };
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+// ---------- controls
+const ctl = {};
+for (const id of ["H", "N", "R", "T", "Q", "M"]) {
+  $(id).oninput = () => { ctl[id] = +$(id).value; label(); recompute(); draw(); };
+}
+for (const id of ["useRej", "Lraw", "Ltrail", "Lunc", "Lray", "Lplane", "Lesp", "Lrej", "Lrings"])
+  $(id).onchange = () => { recompute(); draw(); };
+function label() {
+  $("Hv").textContent = ctl.H + " cm"; $("Nv").textContent = ctl.N + " chirps";
+  $("Rv").textContent = ctl.R + " cm"; $("Tv").textContent = ctl.T;
+  $("Qv").textContent = ctl.Q.toFixed(2); $("Mv").textContent = ctl.M + " µs";
+}
+$("clear").onclick = () => { chirps.length = 0; nOk = 0; recompute(); draw(); };
+$("sound").onclick = async () => {
+  try { await fetch("/sound", { method: "POST", body: JSON.stringify({ on: !status.sound_on }) }); } catch (e) {}
+};
+
+// ---------- geometry
+function project(az, el, H) {          // direction ∩ plane z = H
+  if (el < 2) return null;
+  const d = H / Math.tan(el * DEG);
+  return { x: d * Math.cos(az * DEG), y: d * Math.sin(az * DEG), d };
+}
+function modelTaus(x, y, z) {          // pair delays [us] for a source at (x, y, z) cm
+  const k = 1e4 / CFG.c, m = CFG.mics_cm;
+  const dist = m.map((p) => Math.hypot(x - p[0], y - p[1], z - p[2]));
+  return CFG.pairs.map(([i, j]) => (dist[i] - dist[j]) * k);
+}
+function planeFit(taus, H, x0, y0) {   // Gauss-Newton (LM-damped) on x, y with z = H
+  let x = x0, y = y0, lam = 1e-3;
+  const cost = (x, y) => modelTaus(x, y, H).reduce((s, v, k) => s + (v - taus[k]) ** 2, 0);
+  let c0 = cost(x, y);
+  for (let it = 0; it < 25; it++) {
+    const f = modelTaus(x, y, H), e = 0.5;
+    const fx = modelTaus(x + e, y, H), fy = modelTaus(x, y + e, H);
+    let a = 0, b = 0, cc = 0, gx = 0, gy = 0;
+    for (let k = 0; k < f.length; k++) {
+      const jx = (fx[k] - f[k]) / e, jy = (fy[k] - f[k]) / e, r = f[k] - taus[k];
+      a += jx * jx; b += jx * jy; cc += jy * jy; gx += jx * r; gy += jy * r;
+    }
+    a *= 1 + lam; cc *= 1 + lam;
+    const det = a * cc - b * b; if (Math.abs(det) < 1e-12) break;
+    const dx = -(cc * gx - b * gy) / det, dy = -(a * gy - b * gx) / det;
+    const c1 = cost(x + dx, y + dy);
+    if (c1 < c0) { x += dx; y += dy; lam /= 3; if (c0 - c1 < 1e-6) { c0 = c1; break; } c0 = c1; }
+    else lam *= 5;
+  }
+  return { x, y, rms: Math.sqrt(c0 / taus.length) };
+}
+function median(a) { const s = [...a].sort((p, q) => p - q), n = s.length;
+  return n ? (n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2) : NaN; }
+
+// derived state, recomputed when H or the filters change
+let pts = [], smooth = [], cur = null;
+function usable(c) { return c.ok || $("useRej").checked; }
+function derive(c) {
+  // accept rule, adjustable live: lowest GCC-PHAT quality and consistency of the 6 delays
+  c.ok = c.q != null && c.misfit_us != null && c.q > ctl.Q && c.misfit_us < ctl.M;
+  c.p = project(c.az, c.el, ctl.H);
+  c.pf = c.p && $("Lplane").checked ? planeFit(c.taus_us, ctl.H, c.p.x, c.p.y) : null;
+}
+function recompute() {
+  for (const c of chirps) derive(c);
+  pts = chirps.filter((c) => usable(c) && c.p);
+  smooth = [];
+  for (let i = 0; i < pts.length; i++) {
+    const w = pts.slice(Math.max(0, i - ctl.N + 1), i + 1);
+    smooth.push({ x: median(w.map((c) => c.p.x)), y: median(w.map((c) => c.p.y)),
+      az: median(w.map((c) => c.az)), el: median(w.map((c) => c.el)),
+      pf: w[0].pf ? { x: median(w.map((c) => c.pf.x)), y: median(w.map((c) => c.pf.y)) } : null });
+  }
+  cur = smooth.length ? smooth[smooth.length - 1] : null;
+  readout();
+}
+
+// ---------- readout
+const f1 = (v, u = "") => (v == null || !isFinite(v) ? "–" : v.toFixed(1) + u);
+const f0 = (v, u = "") => (v == null || !isFinite(v) ? "–" : (Math.round(v) === 0 ? "" : v > 0 ? "+" : "−") + Math.abs(Math.round(v)) + u);
+function readout() {
+  const last = chirps[chirps.length - 1];
+  $("vcnt").textContent = `${chirps.length} / ${chirps.filter((c) => c.ok).length}`;
+  if (last) {
+    $("vq").textContent = `${last.q == null ? "–" : last.q.toFixed(2)} / ${f1(last.misfit_us, " µs")}` + (last.ok ? "" : "  rejected");
+    $("vlvl").textContent = `${f1(last.lvl_db, " dB")} / ${last.snr == null ? "–" : last.snr.toFixed(0)}`;
+    const e = last.esp_pos;
+    $("vesp").textContent = e ? `(${e.map((v) => v.toFixed(0)).join(", ")}) cm` : "–";
+  }
+  const recent = chirps.filter((c) => c.rx > performance.now() - 5000);
+  $("vrate").textContent = recent.length > 1 ? (recent.length / 5).toFixed(1) + " Hz" : "–";
+  if (!cur) { for (const id of ["vx", "vy", "vaz", "vel"]) $(id).textContent = "–"; return; }
+  $("vx").textContent = f0(cur.x, " cm"); $("vy").textContent = f0(cur.y, " cm");
+  $("vaz").textContent = cur.az.toFixed(1) + "°"; $("vel").textContent = cur.el.toFixed(1) + "°";
+  const d = Math.hypot(cur.x, cur.y);
+  $("vd").textContent = f1(d, " cm"); $("vr").textContent = f1(Math.hypot(d, ctl.H), " cm");
+  const u = unc(cur.el);
+  $("vexp").textContent = `±${u.rad.toFixed(1)} × ±${u.tan.toFixed(1)} cm`;
+  const w = pts.slice(-Math.max(ctl.N, 5));
+  if (w.length >= 3) {
+    const mx = w.reduce((s, c) => s + c.p.x, 0) / w.length, my = w.reduce((s, c) => s + c.p.y, 0) / w.length;
+    const sd = Math.sqrt(w.reduce((s, c) => s + (c.p.x - mx) ** 2 + (c.p.y - my) ** 2, 0) / (w.length - 1));
+    $("vspread").textContent = f1(sd, " cm");
+  }
+  $("vdiff").textContent = cur.pf ? f1(Math.hypot(cur.pf.x - cur.x, cur.pf.y - cur.y), " cm") : "layer off";
+  if (truth) {
+    $("ttruth").hidden = $("vtruth").hidden = false;
+    $("vtruth").textContent = `${truth.name}: (${truth.pos.map((v) => v.toFixed(0)).join(", ")}) cm`;
+  }
+}
+// expected error of the projected point for a direction error δ (radial along the azimuth, tangential)
+function unc(el) {
+  const dlt = (CFG ? CFG.dir_err_deg : 0.6) * DEG, s = Math.sin(el * DEG);
+  return { rad: ctl.H * dlt / (s * s), tan: ctl.H * dlt / s };
+}
+
+// ---------- drawing
+function setup(cv) {
+  const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
+  const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return [g, r.width, r.height];
+}
+function dotAt(g, x, y, r, fill, ring) {
+  g.beginPath(); g.arc(x, y, r, 0, 2 * Math.PI); g.fillStyle = fill; g.fill();
+  if (ring) { g.lineWidth = 2; g.strokeStyle = ring; g.stroke(); }
+}
+function draw() {
+  if (!CFG) return;
+  drawMap(); drawSide(); legend();
+}
+function drawMap() {
+  const [g, W, Hh] = setup($("map"));
+  const R = ctl.R, pad = 28, S = (Math.min(W, Hh) - 2 * pad) / (2 * R);
+  const cx = W / 2, cy = Hh / 2;
+  const X = (x) => cx + x * S, Y = (y) => cy - y * S;
+  const surf = css("--surface");
+  g.clearRect(0, 0, W, Hh);
+  // grid every 50 cm
+  g.lineWidth = 1; g.strokeStyle = css("--grid"); g.font = "11px system-ui"; g.fillStyle = css("--muted");
+  for (let v = -Math.floor(R / 50) * 50; v <= R; v += 50) {
+    g.beginPath(); g.moveTo(X(v), Y(-R)); g.lineTo(X(v), Y(R)); g.stroke();
+    g.beginPath(); g.moveTo(X(-R), Y(v)); g.lineTo(X(R), Y(v)); g.stroke();
+    if (v % 100 === 0 && v !== 0) { g.fillText(v, X(v) + 3, Y(0) - 4); g.fillText(v, X(0) + 4, Y(v) - 3); }
+  }
+  g.strokeStyle = css("--axis"); g.beginPath(); g.moveTo(X(-R), Y(0)); g.lineTo(X(R), Y(0));
+  g.moveTo(X(0), Y(-R)); g.lineTo(X(0), Y(R)); g.stroke();
+  g.fillStyle = css("--ink2"); g.fillText("+x [cm]", X(R) - 44, Y(0) + 14); g.fillText("+y", X(0) + 6, Y(R) + 12);
+  if ($("Lrings").checked) {
+    g.setLineDash([3, 4]); g.strokeStyle = css("--axis");
+    for (let r = 100; r <= R; r += 100) { g.beginPath(); g.arc(cx, cy, r * S, 0, 2 * Math.PI); g.stroke(); }
+    g.setLineDash([]);
+  }
+  // array
+  const m = CFG.mics_cm;
+  g.strokeStyle = css("--ink2"); g.lineWidth = 1.5; g.beginPath();
+  m.forEach((p, i) => (i ? g.lineTo(X(p[0]), Y(p[1])) : g.moveTo(X(p[0]), Y(p[1])))); g.closePath(); g.stroke();
+  m.forEach((p, i) => { dotAt(g, X(p[0]), Y(p[1]), 4, css("--ink")); g.fillStyle = css("--ink2");
+    g.fillText("M" + (i + 1), X(p[0]) + (p[0] > 0 ? 6 : -24), Y(p[1]) + (p[1] > 0 ? -6 : 14)); });
+  // rejected chirps
+  const tail = ctl.T, recentAll = chirps.slice(-Math.max(tail, 1));
+  if ($("Lrej").checked) for (const c of recentAll) if (!c.ok && c.p) {
+    g.beginPath(); g.arc(X(c.p.x), Y(c.p.y), 3, 0, 2 * Math.PI); g.lineWidth = 1; g.strokeStyle = css("--rej"); g.stroke(); }
+  // single chirps (direction ∩ plane), fading
+  if ($("Lraw").checked) {
+    const P = pts.slice(-Math.max(tail, ctl.N));
+    P.forEach((c, i) => { g.globalAlpha = 0.15 + 0.55 * (i + 1) / P.length;
+      dotAt(g, X(c.p.x), Y(c.p.y), 2.5, css("--c1")); });
+    g.globalAlpha = 1;
+  }
+  // ESP32 free 3D fit
+  if ($("Lesp").checked) for (const c of chirps.slice(-ctl.N)) if (c.esp_pos && usable(c)) {
+    const [x, y] = c.esp_pos; g.beginPath(); const s = 4;
+    g.moveTo(X(x) - s, Y(y) - s); g.lineTo(X(x) + s, Y(y) + s); g.moveTo(X(x) - s, Y(y) + s); g.lineTo(X(x) + s, Y(y) - s);
+    g.lineWidth = 2; g.strokeStyle = css("--c3"); g.stroke(); }
+  // trail
+  if ($("Ltrail").checked && smooth.length > 1) {
+    const T = smooth.slice(-Math.max(tail, 2));
+    g.lineWidth = 2; g.strokeStyle = css("--c1"); g.globalAlpha = 0.55; g.beginPath();
+    T.forEach((p, i) => (i ? g.lineTo(X(p.x), Y(p.y)) : g.moveTo(X(p.x), Y(p.y)))); g.stroke(); g.globalAlpha = 1;
+  }
+  // demo truth
+  if (truth) {
+    const [x, y] = truth.pos; g.lineWidth = 2; g.strokeStyle = css("--truth");
+    g.beginPath(); g.arc(X(x), Y(y), 9, 0, 2 * Math.PI); g.stroke();
+    g.beginPath(); g.moveTo(X(x) - 13, Y(y)); g.lineTo(X(x) + 13, Y(y)); g.moveTo(X(x), Y(y) - 13); g.lineTo(X(x), Y(y) + 13); g.stroke();
+  }
+  if (!cur) {
+    g.fillStyle = css("--muted"); g.font = "14px system-ui"; g.textAlign = "center";
+    g.fillText(status.sound_on ? "listening… (no usable chirp yet)" : "press “Start sound” (here or on the phone)", cx, cy + 60);
+    g.textAlign = "start"; return;
+  }
+  // ray from the array centre to the position
+  if ($("Lray").checked) { g.setLineDash([6, 4]); g.lineWidth = 1.5; g.strokeStyle = css("--c1");
+    g.beginPath(); g.moveTo(cx, cy); g.lineTo(X(cur.x), Y(cur.y)); g.stroke(); g.setLineDash([]); }
+  // expected error ellipse
+  if ($("Lunc").checked) {
+    const u = unc(cur.el), a = Math.atan2(cur.y, cur.x);
+    g.save(); g.translate(X(cur.x), Y(cur.y)); g.rotate(-a);
+    g.beginPath(); g.ellipse(0, 0, Math.max(u.rad * 2 * S, 3), Math.max(u.tan * 2 * S, 3), 0, 0, 2 * Math.PI);
+    g.fillStyle = css("--c1"); g.globalAlpha = 0.12; g.fill(); g.globalAlpha = 0.6; g.lineWidth = 1;
+    g.strokeStyle = css("--c1"); g.stroke(); g.restore(); g.globalAlpha = 1;
+  }
+  if ($("Lplane").checked && cur.pf) dotAt(g, X(cur.pf.x), Y(cur.pf.y), 7, css("--c2"), surf);
+  dotAt(g, X(cur.x), Y(cur.y), 10, css("--c1"), surf);
+  g.fillStyle = css("--ink"); g.font = "600 13px system-ui";
+  g.fillText(`(${Math.round(cur.x) || 0}, ${Math.round(cur.y) || 0}) cm`, X(cur.x) + 14, Y(cur.y) - 12);
+}
+function drawSide() {
+  const [g, W, Hh] = setup($("side"));
+  g.clearRect(0, 0, W, Hh);
+  const dmax = ctl.R * 1.3, zmax = Math.max(ctl.H * 1.3, 120), pl = 40, pr = 12, pt = 10, pb = 24;
+  const S = Math.min((W - pl - pr) / dmax, (Hh - pt - pb) / zmax);
+  const X = (d) => pl + d * S, Y = (z) => Hh - pb - z * S;
+  g.font = "11px system-ui"; g.lineWidth = 1;
+  g.strokeStyle = css("--grid"); g.fillStyle = css("--muted");
+  for (let d = 0; d <= dmax; d += 50) { g.beginPath(); g.moveTo(X(d), Y(0)); g.lineTo(X(d), Y(zmax)); g.stroke();
+    if (d % 100 === 0) g.fillText(d, X(d) - 6, Hh - 8); }
+  for (let z = 0; z <= zmax; z += 50) { g.beginPath(); g.moveTo(X(0), Y(z)); g.lineTo(X(dmax), Y(z)); g.stroke();
+    g.fillText(z, 8, Y(z) + 4); }
+  g.fillStyle = css("--ink2"); g.fillText("horizontal distance [cm]", X(dmax) - 130, Hh - 8);
+  // floor + array
+  g.strokeStyle = css("--axis"); g.beginPath(); g.moveTo(X(0), Y(-4)); g.lineTo(X(dmax), Y(-4)); g.stroke();
+  g.lineWidth = 4; g.strokeStyle = css("--ink"); g.beginPath();
+  g.moveTo(X(0), Y(0)); g.lineTo(X(CFG.array_cm / 2), Y(0)); g.stroke();
+  // plane z = H
+  g.setLineDash([5, 4]); g.lineWidth = 1; g.strokeStyle = css("--ink2");
+  g.beginPath(); g.moveTo(X(0), Y(ctl.H)); g.lineTo(X(dmax), Y(ctl.H)); g.stroke(); g.setLineDash([]);
+  g.fillStyle = css("--ink2"); g.fillText(`z = H = ${ctl.H} cm`, X(dmax) - 92, Y(ctl.H) - 5);
+  if (!cur) return;
+  const d = Math.hypot(cur.x, cur.y);
+  if ($("Lray").checked) { g.lineWidth = 1.5; g.strokeStyle = css("--c1");
+    const L = Math.min(dmax, d * 1.4); g.beginPath(); g.moveTo(X(0), Y(0));
+    g.lineTo(X(L), Y(L * Math.tan(cur.el * DEG))); g.stroke();
+    g.fillStyle = css("--c1"); g.fillText(`el ${cur.el.toFixed(1)}°`, X(28), Y(6)); }
+  if ($("Lesp").checked) {
+    const c = [...chirps].reverse().find((c) => c.esp_pos && usable(c));
+    if (c) { const [x, y, z] = c.esp_pos; dotAt(g, X(Math.hypot(x, y)), Y(z), 5, css("--c3"), css("--surface")); }
+  }
+  if (truth) { const [x, y, z] = truth.pos; g.strokeStyle = css("--truth"); g.lineWidth = 2;
+    g.beginPath(); g.arc(X(Math.hypot(x, y)), Y(z), 7, 0, 2 * Math.PI); g.stroke(); }
+  dotAt(g, X(d), Y(ctl.H), 8, css("--c1"), css("--surface"));
+}
+function legend() {
+  const items = [["--c1", "direction ∩ plane (smoothed: big dot, single chirps: small)"]];
+  if ($("Lplane").checked) items.push(["--c2", "plane fit of the 6 delays"]);
+  if ($("Lesp").checked) items.push(["--c3", "ESP32 free 3D fit"]);
+  if ($("Lrej").checked) items.push(["--rej", "rejected chirp"]);
+  if (truth) items.push(["--truth", "true point (demo)"]);
+  $("legend").innerHTML = items.map(([v, t]) =>
+    `<span><span class="sw" style="background:var(${v})"></span>${t}</span>`).join("");
+}
+
+// ---------- status + stream
+function setDot(id, cls) { $(id).className = "dot " + cls; }
+function showStatus() {
+  $("tEsp").textContent = status.esp || "server connected";
+  setDot("dEsp", status.esp ? "ok" : "warn");
+  $("tPhone").textContent = "phone: " + (status.phone || "–");
+  setDot("dPhone", /connected \(|demo/.test(status.phone || "") ? "ok" : "warn");
+  $("sound").textContent = status.sound_on ? "Stop sound" : "Start sound";
+  $("sound").classList.toggle("on", !!status.sound_on);
+}
+setInterval(() => {
+  if (!lastRx) return;
+  const a = (performance.now() - lastRx) / 1000;
+  $("age").textContent = `last chirp ${a < 1 ? "now" : a.toFixed(0) + " s ago"}`;
+  setDot("dChirp", a < 2 ? "ok" : a < 10 ? "warn" : "bad"); readout();
+}, 500);
+function connect() {
+  const es = new EventSource("/events");
+  es.onmessage = (ev) => {
+    const m = JSON.parse(ev.data);
+    if (m.type === "status") { status = m; showStatus(); }
+    else if (m.type === "truth") { truth = m; }
+    else if (m.type === "chirp") {
+      m.rx = performance.now(); lastRx = m.rx; derive(m); chirps.push(m);
+      if (chirps.length > 3000) chirps.splice(0, chirps.length - 3000);
+      $("dChirp").classList.remove("pulse"); void $("dChirp").offsetWidth; $("dChirp").classList.add("pulse");
+      recompute(); draw();
+    }
+  };
+  es.onerror = () => { $("tEsp").textContent = "no connection to live_app.py – retrying"; setDot("dEsp", "bad"); };
+}
+(async () => {
+  CFG = await (await fetch("/config")).json();
+  ctl.H = CFG.height_cm; $("H").value = ctl.H;
+  ctl.Q = CFG.min_q ?? 0.12; $("Q").value = ctl.Q;
+  ctl.M = CFG.max_misfit_us ?? 10; $("M").value = ctl.M;
+  for (const id of ["N", "R", "T"]) ctl[id] = +$(id).value;
+  label();
+  $("cfgnote").textContent = `${CFG.array_cm} cm array, rotation ${CFG.rot_deg}°, c = ${CFG.c.toFixed(1)} m/s, ` +
+    `${CFG.signal} every ${CFG.period_s} s. Ellipse: ±${CFG.dir_err_deg}° direction error (median of the a30 series).` +
+    (CFG.demo ? " DEMO: replay of recorded chirps." : "");
+  applyTheme(); connect();
+  window.addEventListener("resize", draw);
+})();
+</script>
+</body>
+</html>

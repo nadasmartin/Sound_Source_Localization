@@ -1,4 +1,4 @@
-// On-board version of host/tdoa.py + host/localize.py for one detected chirp
+// On-board TDOA + localization (same model as host/localize.py) for one detected chirp
 // (the Detector found it and cut out the window around it):
 //   1. GCC-PHAT for all 6 mic pairs, sub-sample peak
 //   2. least-squares arrival time per mic (+ misfit as a consistency check)

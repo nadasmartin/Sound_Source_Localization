@@ -1,8 +1,0 @@
-source /home/nadasmartin/okos_lab_project/.venv/bin/activate
-
-cd /home/nadasmartin/okos_lab_project/firmware
-pio run -t upload
-
-cd /home/nadasmartin/okos_lab_project/host
-python mic...
-python tdoa...

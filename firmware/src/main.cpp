@@ -1,6 +1,6 @@
 // On-board sound source localization. No Wi-Fi: everything is computed on the
 // ESP32 and only the results go to the PC, as JSON lines over the USB serial
-// port (921600 baud). Host side: host/telemetry.py.
+// port (921600 baud). Host side: host/live_app.py, host/series.py, host/bench.py.
 //
 // The work is split across the ESP32's two cores:
 //   core 1 (Arduino loop): read ADC DMA blocks, average, push every set

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Run the ESP32's on-board TDOA pipeline on the PC, on a saved recording.
-#   ./run_native.sh ../../host/recordings/good_example.npz [temp_C] [threshold]
-# Compare with:  python host/tdoa.py --load <same file>
+#   ./run_native.sh <recording.npz> [temp_C] [threshold]
+# The .npz holds "x": raw ADC samples, shape [n][4] (4 mics, 44.1 kHz).
+# Output: the same JSON event lines the ESP32 prints.
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 lib="$here/../lib/tdoa"

@@ -4359,3 +4359,205 @@ The project is not under git and there is no copy elsewhere.
   - the identification procedure and its results;
   - consequences.
 - Additional numbers, computed with the analysis page's own logic: capability classes at 20 cm / 3° / 50 % are 21/12/26, 8/30/22 and 0/28/32. Direction from all detected chirps at failing points: 2.5° / 4.0° / 7.8°.
+
+## 2026-11-18 21:45 — Final report draft (Hungarian, Markdown)
+
+- New `docs/final_report/zarojelentes.md`, the editable final report in Hungarian. Sections:
+  1. project and goal, with the deviations from `docs/projektterv_10_13.pdf`;
+  2. the mic array (mechanics, measuring chain, source and bench);
+  3. choosing the test signal (P1–P4 sweeps, error models, ranking → chirp 3–12 kHz 50 ms);
+  4. the test campaign (grid `distance_v2`, protocol, runs, exclusion);
+  5. results;
+  6. system identification and the G·σ error model;
+  7. conclusions;
+  8. summary.
+- Photos from the user: `docs/final_report/img/array_felulnezet.jpeg` (top view, 30 cm layout) and `array_alulnezet.jpeg` (board from below).
+- Figures are linked from `docs/report/fig_*.svg`.
+- Open item in the text: mic module type and supply ("[kitöltendő]").
+- Numbers taken from this log and from `identification.json`. No new analysis.
+
+## 2026-11-18 22:45 — Live localization app (direction-based), 30 cm layout put back
+
+- The user put the 30 cm layout back. Goal: a live demo of the system's capability. The phone is held about 1 m above the mic plane, plays the chirp continuously, and a page shows where it is.
+- **Method: position from direction.**
+  - Each chirp's far-field direction (azimuth, elevation; the same least-squares fit as the ESP32 and `analyze_series.relocalize`) is intersected with the plane z = H.
+  - H is the known phone height, 100 cm by default, adjustable live on the page.
+  - Why: the series showed direction is the robust quantity (a30 median 0.3–0.6° at z ≥ 50), while the free 3D distance is weak.
+  - Expected error for a direction error δ:
+    - radial: H·δ / sin²(el);
+    - tangential: H·δ / sin(el).
+    - For δ = 0.62° at H = 100 cm: about 2 × 1.5 cm at 1 m horizontal and 4 × 2 cm at 1.7 m.
+  - A height error scales the horizontal distance by the same factor (10 cm too low at 1 m → 10 % too short).
+- **New files:**
+  - `host/live_app.py`:
+    - drives the ESP32: array 30, rot 0, holdoff, default chirp 3–12 kHz / 50 ms;
+    - drives the phone (`phone_server`, plays 240-chirp chunks every 0.25 s while the sound is on, with a start/stop button on the phone);
+    - pushes every chirp to the page (server-sent events, port 8766);
+    - logs every chirp to `host/live_logs/live_<time>.jsonl`.
+    - `--demo` replays the a30 z = 90 cm chirps without hardware.
+  - `host/live/index.html`:
+    - top view: smoothed position, single chirps, trail, expected-error ellipse, direction ray, distance rings, rejected chirps;
+    - optional: a plane-constrained fit of all 6 delays (z = H, Gauss–Newton in the browser) and the ESP32's free 3D fit;
+    - side view along the measured azimuth;
+    - readouts: x, y, az, el, distances, expected error, spread, rate, q / misfit, level;
+    - settings: H, smoothing (median of N chirps), view range, trail length, use rejected chirps;
+    - light/dark theme.
+- **Tests:**
+  - Demo mode in headless Chrome: z090-Y050, true (0, 50) → shown (0, 48) cm with H = 90.
+  - With H = 100 the same data gives 1.11× the distance, as expected.
+  - Plane fit unit test (node): true (70, 120) with 0.25 µs noise → (70.0, 120.0) cm.
+- Command (in `host/`): `python live_app.py` (options `--height`, `--period`, `--array`, `--demo`). Laptop: http://localhost:8766/. Phone: http://<laptop>:8765/.
+
+## 2026-11-21 — Final report rewritten (more scientific style, whole-semester scope)
+
+- `docs/final_report/zarojelentes.md` was rewritten at the user's request:
+  - it now covers the whole semester instead of reading as a check-off of the project plan;
+  - it justifies the decisions;
+  - it uses fewer bullet lists.
+- New structure:
+  - abstract;
+  - introduction;
+  - literature background and the choice of method: GCC-PHAT vs SRP-PHAT, MUSIC and ML, with references;
+  - hardware: requirements derived from the angular resolution, why the ESP32, mics and mechanics, source;
+  - software: the Wi-Fi → on-board evolution, firmware, host tools, reproducibility, the live app;
+  - test signal;
+  - campaign;
+  - results;
+  - identification;
+  - conclusions;
+  - summary;
+  - 12 references.
+- The user's own edit of the introduction (deterministic, classical approach) was kept.
+- Still open: mic module type and supply (`[kitöltendő]`).
+- The paragraph on hardware alternatives (8-bit MCUs, Raspberry Pi) is reasoning, not a recorded evaluation; the user should confirm it.
+
+## 2026-11-21 — Final report: second revision (user's review)
+
+User's requests and the changes made in `docs/final_report/zarojelentes.md`:
+- **Self-contained document.** The project plan is no longer mentioned anywhere. The mic hardware is called "mikrofon-rendszer" or "<n> cm-es elrendezés" throughout, never "tömb".
+- **Abstract.** σ is explained: the effective timing error of the whole chain.
+- **Semester overview.** Shortened. The first software generation (Wi-Fi streaming) is dropped everywhere.
+- **Section 2.** The matched-filter paragraph is rewritten in plain terms.
+- **Section 4.** Firmware is described step by step:
+  - sampling and ring buffer;
+  - detection;
+  - GCC-PHAT as the core: band, cross-spectrum, PHAT, IFFT, 1/16-sample refinement, q, skew correction;
+  - consistency check (misfit = least-squares closure of the 6 pair delays into 4 arrival times);
+  - localization (grid + LM, far-field direction);
+  - output and control.
+- **Section 5.** The fixed test signal is justified by comparability and determinism, not by the plan.
+- **Section 6.** Starts with the purpose. The point layout is explained by symmetry, as the user designed it: upper hemisphere, the square's 4 mirror planes, so one 45° slice (az 45–90°) is enough.
+  - New 3D figure `docs/final_report/img/meresi_pontok.png`, made by `host/fig_measurement_points.py`.
+- **Section 7.**
+  - z = 50 and z = 90 are now separate rows. Numbers recomputed with `analyze_series` at rotation 0:
+    - a30 z50 5.6 cm / 0.69° / 67 %, z90 10.3 / 0.33 / 90;
+    - a20 z50 15.5 / 1.17 / 83, z90 40.2 / 0.68 / 91;
+    - a10 z50 54.7 / 3.42 / 89, z90 77.4 / 2.20 / 92.
+  - 7.2 is rewritten for an outside reader as a check of the mic system's alignment (fitted rotation ≈ 0), without the +2.13° story.
+  - The Fraunhofer columns are explained (D = side vs. diagonal, λ at 7.5 kHz).
+  - 7.6 is reworded: in the studied environment the theoretical limit does not hold for 30/20 cm, likely because of reflections and the room.
+- **Section 8.** The system identification (M0–M5, cross-validation) is removed at the user's request. Only the geometric error model (G, σ, 3D error ≈ G·σ) is kept, explained step by step.
+- (same day) Table 4 of the final report now gives a single Fraunhofer distance, at the user's request: D = the largest extent of the mic system (the square's diagonal), so 787 / 350 / 87 cm for 30 / 20 / 10 cm. The text of section 7.6 is changed to match.
+
+## 2026-11-23 — Board had foreign firmware: on-board firmware re-flashed; manual added
+
+- **Symptom.** `live_app.py` reported no connection to the ESP32.
+- **Cause.**
+  - `/dev/ttyUSB0` was free, so no other program was holding the port.
+  - The board sent a repeating binary stream (about 1.1 kB/s at 921600 baud, no JSON) and did not answer `status`.
+  - So it was running a different firmware, not ours.
+- **Fix.** Ran `pio run -e esp32 -t upload` in `firmware/`. The board now reports:
+  - fw `9587b9dbc09c`, equal to the sources on disk;
+  - 43 876 Hz/mic;
+  - array 30 cm, rotation 0° (kept in flash).
+- **New files:**
+  - `docs/MANUAL.md`: short how-to covering setup, flashing, start-up of the host, and troubleshooting;
+  - `host/requirements.txt`: the Python packages of the lab laptop's `.venv`.
+
+## 2026-11-23 21:35 — Live app: looser accept rule (host side)
+
+- **User's observation.** The live run `host/live_logs/live_20261123_212609.jsonl` rejected many good detections.
+- **Analysis of that run:**
+  - 457 chirps, 298 accepted by the firmware rule (q > 0.2, misfit < 10 µs).
+  - Of the 159 rejected, 158 failed the quality rule (q ≤ 0.2) and only 1 failed on misfit alone.
+  - The rejected chirps mostly had consistent delays: misfit median 2.7 µs, q 0.12–0.19 for the middle half of them.
+- **Effect of looser rules:**
+  - q > 0.12, misfit < 10 µs: 406 of 457 accepted (89 %, +108).
+  - q > 0.15: 378 accepted.
+  - Loosening the misfit limit to 15–30 µs adds almost nothing.
+  - Measured on this run, the newly accepted chirps deviate about 8° (median) from neighbouring accepted ones, against 3° among the already-accepted ones. The phone was moving, so both numbers include movement.
+- **Change.**
+  - `host/live_app.py` decides acceptance itself: options `--min-q` (default 0.12) and `--max-misfit` (default 10 µs).
+  - The ESP32's flag is kept as `esp_ok` in each message and in the log.
+  - `host/live/index.html` has two new sliders, "accept q >" and "misfit <", which re-filter all chirps live.
+- **The firmware limits are unchanged** (`MIN_QUALITY` 0.2, `MAX_MISFIT_S` 10 µs in `firmware/lib/tdoa/dsp_config.h`). The measurement series and their evaluation keep the original definition.
+- **Check.** Demo replay in headless Chrome: chirps accepted and plotted, sliders show 0.12 / 10 µs. The page script passes `node --check`.
+
+## 2026-11-23 — Final report as PDF
+
+- `docs/final_report/zarojelentes.pdf`: 14 pages, A4, page numbers. Made from the user's final `zarojelentes.md`.
+- Builder: `docs/final_report/build_pdf.py`. Run `python build_pdf.py` in `docs/final_report/`.
+  - pandoc and the Python `markdown` package are not installed, and pip has no network here, so it uses its own small converter for the Markdown features the report uses.
+  - Its intermediate `zarojelentes.html` is printed by headless Chrome.
+
+## 2026-11-23 — Codebase cleanup (outdated files and documents deleted)
+
+Done at the user's request. Nothing was moved; the user chose the groups to delete.
+
+- **Wi-Fi generation:**
+  - `firmware/src/wifi_stream/` and env `esp32_wifi`;
+  - `firmware/include/wifi_secrets.example.h` and the local `wifi_secrets.h`;
+  - `host/tdoa.py`, `host/test_signal.py`, `host/telemetry.py`, `host/signals/*.wav`.
+- **Data from the 19 cm array and the Wi-Fi era:**
+  - `host/recordings/`, `host/results/`, `host/telemetry_logs/`;
+  - `host/bench_results/old_19cm_array/`, `host/bench_results/tests/`;
+  - `host/calibration.json`.
+- **Build output and test files:**
+  - `firmware/test_native/build/`, now in `.gitignore`;
+  - `docs/final_report/zarojelentes.html`, now in `.gitignore`;
+  - `host/__pycache__/`;
+  - 9 live logs: demo replays and aborted starts. The real phone runs `live_20261118_224038`, `live_20261123_212609` and `live_20261123_213715` are kept.
+- **Documents:**
+  - the 3-page English report (`docs/report/report.html`, `report.pdf`, `fig_identification.svg`). The three figures used by the final report stay.
+  - `error_vs_distance.png` and `error_vs_distance_rot2.13.png`, which used the +2.13° rotation;
+  - `docs/projektterv_10_13.pdf`.
+- **Follow-up edits:**
+  - `firmware/platformio.ini` now has only the `esp32` env.
+    - Because this file is part of the firmware fingerprint, the fingerprint is now `3da604c17792`. The board still runs `9587b9dbc09c`, built from identical DSP code.
+    - The board was not connected, so no re-flash was done. Running `pio run -e esp32 -t upload` makes the warning go away.
+  - `host/report_figures.py` no longer draws the identification figure.
+  - `docs/MANUAL.md` no longer mentions `esp32_wifi`.
+  - `docs/reproduce.md` has a history entry for the cleanup.
+- **Kept on purpose:**
+  - `docs/code_snapshots/`, which the run records point to;
+  - `host/identify_system.py` with `identification.json`, which feeds σ and the range ratios in the report figures;
+  - `host/mic_viewer.py`, which still works over USB. Its `--wifi` option is now dead.
+  - Comments in the firmware sources that mention `host/tdoa.py`. Changing them would change the fingerprint again.
+- **Recovery:** every deleted file that was tracked can be restored from git commit `63d3927`, e.g. `git checkout 63d3927 -- host/tdoa.py`. The untracked ones are gone: the local `wifi_secrets.h`, the demo live logs, the intermediate HTML and the cache.
+
+## 2026-11-24 14:00 — live_app.py check after "not working"
+
+- **What I checked:**
+  - Startup on the hardware works.
+  - Both web servers answer, the phone page and the WAV are reachable on the LAN IP. The laptop is now on the phone's hotspot (172.20.10.2).
+  - A simulated phone receives preload, then play.
+  - No bug found in the normal path.
+- **Problems found and fixed in `host/live_app.py`:**
+  - Startup when a previous instance is still running (port 8766 or 8765 busy), or when the serial port is missing or busy, used to end in a raw traceback. It now gives a one-line reason and what to do.
+  - When the phone reports an error on play (iOS paused the audio: screen locked or page in the background), the app re-sent the play command every 0.2 s and showed nothing. It now shows "audio paused on the phone: tap the phone's screen" on the page and retries every 2 s.
+- **Firmware re-flashed** (board connected again). The fingerprint is `3da604c17792`, equal to the sources, so the mismatch warning at startup is gone.
+- **Note.** My own test runs (13:53–13:57) briefly held the serial port and the web ports, and may have collided with the user's attempts at that time.
+
+## 2026-11-25 — Report: industrial example; repository prepared for GitHub
+
+- **Final report** (`docs/final_report/zarojelentes.md`, PDF rebuilt, 16 pages):
+  - New subsection at the end of chapter 2, "Ipari példa: az akusztikus kamera" (the acoustic camera as an industrial example), with reference [13] (Teledyne FLIR Si124, 124 microphones).
+  - New figure 1, `docs/final_report/img/akusztikus_kamera.png`, made by `host/fig_acoustic_camera.py`. It is a simulated illustration, not a product photo: a delay-and-sum broadband (4–12 kHz) sound map of a leak 2 m away, (a) with a 64-mic spiral array, (b) with this project's 4-mic 30 cm square.
+  - The other figures are renumbered (2–7).
+  - New section 4.10 with the clickable GitHub link.
+- **Cleanup for the public repository:**
+  - `host/mic_viewer.py` is USB-only now; the dead Wi-Fi mode is removed.
+  - Comments that pointed to deleted scripts (`tdoa.py`, `test_signal.py`, `telemetry.py`) are reworded in `firmware/src/main.cpp`, `firmware/lib/tdoa/*.h|cpp`, `firmware/test_native/run_native.sh` and `host/signals_lib.py`.
+  - These are comment-only firmware changes, so the fingerprint is now `89e9ca1f52c1`. The board was not connected: re-flash it.
+- **New `README.md`** at the root: overview, results in brief, layout, quick start, hardware, data.
+- **Remote:** `git@github.com:nadasmartin/Sound_Source_Localization.git`. It replaces the never-created `okos_lab_proj`.

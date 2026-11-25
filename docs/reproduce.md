@@ -12,6 +12,8 @@ Paths are relative to `/home/nadasmartin/okos_lab_project/`.
 
 ---
 
+See also `docs/MANUAL.md` for the short how-to (setup, flashing, starting the host).
+
 ## 1. Hardware and setup
 
 - **Board:** ESP32 dev board (PlatformIO `board = esp32dev`), USB serial `/dev/ttyUSB0` at 921600 baud.
@@ -72,6 +74,9 @@ python bench.py evaluate <file> --pos X Y Z        # re-score with a corrected p
 python series.py --series a10 --array 10 --rot 0 --channel left --temp T --note "phone volume ..."   # a30 / a20 ran with --rot 2.13
                                                    # distance series, plan plans/distance_v2.json, driven from the phone
 python analyze_series.py                           # evaluate all series of the plan
+python live_app.py [--height 100] [--min-q 0.12] [--max-misfit 10] [--demo]   # live demo: laptop http://localhost:8766/, phone :8765
+python fig_measurement_points.py                   # 3D figure of the measured points for docs/final_report
+python fig_acoustic_camera.py                      # acoustic-camera illustration (figure 1 of docs/final_report)
 ```
 
 Phone: open `http://192.168.1.76:8765/` and tap "Tap to start audio". After a laptop restart the page reconnects by itself (from 2026-11-16 20:05). If Safari was in the background, reload the page and tap again.
@@ -156,7 +161,7 @@ Phone: open `http://192.168.1.76:8765/` and tap "Tap to start audio". After a la
 | 2026-11-16 20:16 | sweep P2 (33.8, 27.5, 47.0) | `host/bench_results/run_20261116_201657_P2.jsonl` | `bench.py sweep --label P2 --channel left --array 30 --pos 33.8 27.5 47.0` | `docs/code_snapshots/2026-11-16_P1-P2/` |
 | 2026-11-16 20:34 | sweep P3 (27.5, −32.3, 42.0); volume lowered further, phone tilted towards the array | `host/bench_results/run_20261116_203451_P3.jsonl` | `bench.py sweep --label P3 --channel left --array 30 --pos 27.5 -32.3 42.0` | code `0ec10024c594` (`docs/code_snapshots/2026-11-16_2018_0ec10024c594/`), firmware `cc8e9c945759` |
 | 2026-11-16 20:41 | sweep P4 (−28.3, −31.3, 42.0); same setup as P3 | `host/bench_results/run_20261116_204112_P4.jsonl` | `bench.py sweep --label P4 --channel left --array 30 --pos -28.3 -31.3 42.0` | code `0ec10024c594`, firmware `cc8e9c945759` |
-| 2026-11-16 ~20:45 | per-mic delay calibration check over P1–P4 (not applied) | result `host/calibration.json` | `bench.py calibrate` and `bench.py calibrate --signal chirp` | code `0ec10024c594` |
+| 2026-11-16 ~20:45 | per-mic delay calibration check over P1–P4 (not applied) | result `host/calibration.json` (deleted 2026-11-23, numbers in the experiment log) | `bench.py calibrate` and `bench.py calibrate --signal chirp` | code `0ec10024c594` |
 | 2026-11-16 ~20:50 | analysis P1–P4: error models, rotation, signal ranking | (printout in the log) | `python analyze_sweeps.py bench_results/run_20261116_200640_P1.jsonl bench_results/run_20261116_201657_P2.jsonl bench_results/run_20261116_203451_P3.jsonl bench_results/run_20261116_204112_P4.jsonl` (in `host/`) | `host/analyze_sweeps.py`, deterministic |
 | 2026-11-18 11:49–12:59 | distance series a30: 30 cm array, 80 points (`plans/distance_v2.json`), z 10–170 cm, 20 × chirp 3–12k each | `host/bench_results/series/distance_v2/a30/` | `python series.py --series a30 --array 30 --rot 2.13 --channel left --temp 21` (in `host/`, phone-driven); evaluate `python analyze_series.py --series a30` | code `d219b4897885` (`docs/code_snapshots/2026-11-18_1139_d219b4897885/`), firmware `9587b9dbc09c` |
 | 2026-11-18 15:49–16:27 | distance series a20: 20 cm array, 80 points (`plans/distance_v2.json`), same settings as a30; not re-calibrated | `host/bench_results/series/distance_v2/a20/` | `python series.py --series a20 --array 20 --rot 2.13 --channel left --temp 21` (in `host/`, phone-driven); evaluate `python analyze_series.py --rot 0` (rotation re-fitted to ≈0°, see the log 2026-11-18 16:45) | firmware `9587b9dbc09c`; code: automatic log entry of the run |
@@ -166,7 +171,7 @@ Later runs: the automatic entries in `docs/experiment_log.md` carry the command,
 
 ## 6. History of code and parameter changes
 
-- **Before 2026-11-14:** Wi-Fi streaming firmware (`firmware/src/wifi_stream/`, env `esp32_wifi`), analysis on the laptop (`host/tdoa.py`).
+- **Before 2026-11-14:** Wi-Fi streaming firmware (`firmware/src/wifi_stream/`, env `esp32_wifi`), analysis on the laptop (`host/tdoa.py`). All removed on 2026-11-23; still in git history (commit `63d3927`) and in `docs/code_snapshots/`.
 - **By 2026-11-14:** all processing moved onto the ESP32 (env `esp32`). Parameters as in section 4.
   - Matched filter instead of an energy trigger.
   - One shared FFT buffer.
@@ -215,3 +220,9 @@ Later runs: the automatic entries in `docs/experiment_log.md` carry the command,
   - `host/plans/distance_v2.json` = the user's grid (16 positions × heights z 10/50/90/130/170 cm). `distance_v1.json` was deleted, never used.
   - `host/series.py`: the phone panel drives the session (Ready / Redo previous / Skip, Finish); default `--count 20`; a redo writes `<point>_2_…` and analysis uses the newest.
   - `host/phone_server.py`: `POST /action`, `set_ui()`, `wait_action()`, `ui`/`uiv` in `/poll`. `host/phone/index.html`: measurement panel.
+- **2026-11-23:** cleanup of outdated files.
+  - Removed: the Wi-Fi generation (`firmware/src/wifi_stream/`, env `esp32_wifi`, `wifi_secrets*.h`, `host/tdoa.py`, `test_signal.py`, `telemetry.py`, `host/signals/`).
+  - Removed: data from the 19 cm array and the Wi-Fi era (`host/recordings/`, `host/results/`, `host/telemetry_logs/`, `bench_results/old_19cm_array/`, `bench_results/tests/`, `calibration.json`).
+  - Removed: `firmware/test_native/build/`, the old 3-page report, the figures with the +2.13° rotation, and the project plan PDF.
+  - `firmware/platformio.ini` now has only the `esp32` env. The firmware fingerprint is now `3da604c17792`: re-flash, or the host warns that the board differs from the sources. The DSP code is unchanged.
+  - Everything removed that was tracked is still in git commit `63d3927`.

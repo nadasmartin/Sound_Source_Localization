@@ -1,0 +1,7 @@
+# Host-side Python packages (versions used on the lab laptop, Python 3.10)
+numpy==2.2.6
+scipy==1.15.3
+pyserial==3.5
+matplotlib==3.10.9
+platformio==6.2.0     # builds and flashes the ESP32 firmware
+qrcode                # optional: prints the phone URL as a QR code in the terminal

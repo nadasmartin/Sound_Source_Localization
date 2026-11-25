@@ -61,7 +61,7 @@ void TdoaProcessor::micSpectra(const uint16_t (*win)[NUM_MICS], TdoaResult &r) {
 
 // PHAT-weighted cross spectrum of mics i and j: X_i conj(X_j) / |.|.
 // PHAT keeps only the phase (= timing), which sharpens the peak and makes it
-// less sensitive to room resonances. Same as gcc_phat() in host/tdoa.py.
+// less sensitive to room resonances.
 void TdoaProcessor::phat(int i, int j, cpx *out) {
   for (int k = 0; k < sig_.nBand(); k++) {
     const cpx p = cmul(spec_[i][k], cconj(spec_[j][k]));

@@ -1,5 +1,5 @@
-// Constants shared by the on-board pipeline. They mirror host/tdoa.py,
-// host/localize.py and host/test_signal.py, so the ESP32 and the Python
+// Constants shared by the on-board pipeline. The geometry and the test signal
+// mirror host/localize.py and host/signals_lib.py, so the ESP32 and the Python
 // analysis compute the same thing. Change them together.
 #pragma once
 
@@ -13,13 +13,13 @@ constexpr int NUM_MICS = 4;
 constexpr uint32_t FS = 44100;     // samples per second per mic
 constexpr uint32_t OVERSAMPLE = 4;
 // The ADC converts the mics one after another: mic k is sampled k slots after
-// mic 1. 1 slot = 1/(FS*OVERSAMPLE*NUM_MICS) = 1.42 us (see host/tdoa.py).
+// mic 1. 1 slot = 1/(FS*OVERSAMPLE*NUM_MICS) = 1.42 us.
 constexpr float CHANNEL_SKEW_S = 1.0f / (float(FS) * OVERSAMPLE * NUM_MICS);
 
 // ------------------------------------------------------------- test signal
 // The signal the detector looks for can be replaced at run time (the host
 // uploads a template over serial, see src/main.cpp). This chirp is the one
-// loaded at boot, identical to host/test_signal.py and signals_lib.DEFAULT.
+// loaded at boot, identical to signals_lib.DEFAULT on the host.
 // 3-12 kHz, 50 ms: best signal of the P1-P4 sweeps (2026-11-16, see
 // docs/experiment_log.md). Until 2026-11-18 it was 1500-8000 Hz.
 constexpr int MAX_SIG_LEN = 2205;         // longest template: 50 ms
@@ -41,7 +41,7 @@ constexpr int RING_LEN = RING_CHUNK * RING_CHUNKS; // 12288 sets = 279 ms
 // gives MF_HOP new correlation values. Two blocks share one complex FFT.
 constexpr int MF_HOP = 4096 - MAX_SIG_LEN + 1;     // 1892
 constexpr float MF_PEAK_WINDOW_S = 0.005f;         // best peak within 5 ms of the first crossing
-constexpr float HOLDOFF_S = 0.3f;                  // as find_peaks(distance=0.3 s) in tdoa.py
+constexpr float HOLDOFF_S = 0.3f;                  // dead time after a detection (echoes)
 constexpr float DEFAULT_MF_THRESHOLD = 12.0f;      // x median; noise-only recordings reach ~8
 
 // --------------------------------------------------------------- analysis
@@ -59,7 +59,7 @@ constexpr float MAX_TDOA_S = 1500e-6f;                // largest delay searched
 constexpr int MAX_LAG = 66;                           // int(MAX_TDOA_S * FS)
 constexpr int INTERP = 16;                            // sub-sample search step 1/16
 
-// Same acceptance checks as tdoa.py
+// Acceptance checks of a detection
 constexpr float MAX_MISFIT_S = 10e-6f;
 constexpr float MIN_QUALITY = 0.2f;
 

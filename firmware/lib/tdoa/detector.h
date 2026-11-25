@@ -1,9 +1,8 @@
 // Ring buffer of recent audio + streaming matched-filter chirp detector.
 //
 // The sampling core only calls Ring::push(). The detector (another task)
-// correlates the mic sum with the known chirp block by block, exactly what
-// find_chirps() in host/tdoa.py does for a whole recording at once: a peak
-// above `threshold` x the median correlation is a chirp start. The chirp is
+// correlates the mic sum with the known chirp block by block (a streaming
+// matched filter): a peak above `threshold` x the median correlation is a chirp start. The chirp is
 // usually far below the background noise per sample (~25 dB processing gain
 // from the 50 ms sweep), so a plain loudness trigger would not see it.
 #pragma once
@@ -98,7 +97,7 @@ class Detector {
   uint32_t chirps_ = 0, overruns_ = 0;
 };
 
-// The boot-time chirp (as test_signal.chirp_template) into work[0..CHIRP_LEN), rest zeroed
+// The boot-time chirp (= signals_lib.DEFAULT on the host) into work[0..CHIRP_LEN), rest zeroed
 void defaultChirp(cpx *work);
 
 }  // namespace dsp

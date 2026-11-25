@@ -81,8 +81,8 @@ class Signal:
 
     # ----------------------------------------------------- ESP32 template
     def band_bins(self):
-        """Analysis band on the ESP32: the signal band with ~10% margin, as
-        tdoa.py uses 1200-9000 Hz for the 1500-8000 Hz chirp."""
+        """Analysis band on the ESP32: the signal band with ~10% margin
+        (0.8 f_lo .. 1.125 f_hi), at most N_BAND_MAX bins."""
         if self.kind == "tone":
             lo, hi = self.f_lo * 0.8, self.f_lo * 1.25
         else:

@@ -1,20 +1,18 @@
 """Live viewer for the 4 microphones: the last seconds of waveform per mic and
 its loudness, plus the sample rate actually achieved.
 
-Over the USB cable (default; on-board firmware, env "esp32"): the full 44.1 kHz
-audio does not fit through the serial port, so the ESP32 averages every
---avg readings into one ("scope" command) and sends that real, slower waveform:
---avg 8 -> 5.5 kHz per mic (shows sound up to ~2.7 kHz), about 60 kB/s.
-Over Wi-Fi (--wifi, firmware env "esp32_wifi"): the full-rate stream.
+Over the USB cable (on-board firmware): the full 44.1 kHz audio does not fit
+through the serial port, so the ESP32 averages every --avg readings into one
+("scope" command) and sends that real, slower waveform: --avg 8 -> 5.5 kHz per
+mic (shows sound up to ~2.7 kHz), about 60 kB/s. Useful to identify the mics
+(tap one) and to check that all four are alive.
 
 Usage:  python mic_viewer.py [--window 5] [--range 2048] [--avg 8] [--port /dev/ttyUSB0]
-        python mic_viewer.py --wifi esp32-mics.local
 """
 
 import argparse
 import base64
 import json
-import socket
 import threading
 import time
 from collections import deque
@@ -23,14 +21,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
 
-# Must match the firmware
-TCP_PORT = 3333
-NOMINAL_RATE = 45000          # per mic; the real rate is measured below
 NUM_MICS = 4
-FRAME_SETS = 128
-SYNC = b"\xaa\x55"
-HEADER_BYTES = 6              # sync, seq, overflow counter
-FRAME_BYTES = HEADER_BYTES + FRAME_SETS * 6
 MIC_LABELS = ["Mic 1 (D34)", "Mic 2 (D35)", "Mic 3 (D32)", "Mic 4 (D33)"]
 ESP_RATE = 44100
 
@@ -38,81 +29,6 @@ WINDOW_SECONDS = 2.0
 LOUDNESS_SECONDS = 0.1        # loudness = RMS over this much recent audio
 PLOT_BINS = 1000              # long windows are drawn as min/max per bin
 MAX_PLOT_POINTS = 15000       # shorter ones sample by sample
-
-
-def unpack_sets(payload):
-    """Unpack 12-bit packed samples into an (n_sets, 4) array."""
-    b = np.frombuffer(payload, dtype=np.uint8).reshape(-1, 3).astype(np.uint16)
-    first = b[:, 0] | ((b[:, 1] & 0x0F) << 8)
-    second = (b[:, 1] >> 4) | (b[:, 2] << 4)
-    return np.stack([first, second], axis=1).reshape(-1, NUM_MICS)
-
-
-class StreamReader(threading.Thread):
-    """Background thread: reads frames into a ring buffer and keeps statistics."""
-
-    def __init__(self, host):
-        super().__init__(daemon=True)
-        self.sock = socket.create_connection((host, TCP_PORT), timeout=5)
-        self.sock.settimeout(None)
-        self.size = int(NOMINAL_RATE * WINDOW_SECONDS * 1.2)
-        self.ring = np.zeros((self.size, NUM_MICS), dtype=np.uint16)
-        self.write_pos = 0
-        self.filled = 0
-        self.lock = threading.Lock()
-
-        self.last_seq = None
-        self.lost_frames = 0
-        self.adc_overflows = 0
-        self.arrivals = deque()   # (time, n_sets) for the rate measurement
-
-    def run(self):
-        pending = b""
-        while True:
-            chunk = self.sock.recv(65536)
-            if not chunk:
-                raise ConnectionError("ESP32 closed the connection")
-            pending += chunk
-            while True:
-                start = pending.find(SYNC)
-                if start == -1 or len(pending) < start + FRAME_BYTES:
-                    pending = pending[start:] if start != -1 else pending[-1:]
-                    break
-                frame = pending[start:start + FRAME_BYTES]
-                pending = pending[start + FRAME_BYTES:]
-                self._handle(frame)
-
-    def _handle(self, frame):
-        seq = frame[2] | (frame[3] << 8)
-        if self.last_seq is not None:
-            self.lost_frames += ((seq - self.last_seq) & 0xFFFF) - 1
-        self.last_seq = seq
-        self.adc_overflows = frame[4] | (frame[5] << 8)
-
-        sets = unpack_sets(frame[HEADER_BYTES:])
-        with self.lock:
-            idx = (self.write_pos + np.arange(len(sets))) % self.size
-            self.ring[idx] = sets
-            self.write_pos = (self.write_pos + len(sets)) % self.size
-            self.filled = min(self.filled + len(sets), self.size)
-            now = time.monotonic()
-            self.arrivals.append((now, len(sets)))
-            while self.arrivals and now - self.arrivals[0][0] > 2.0:
-                self.arrivals.popleft()
-
-    def snapshot(self, n):
-        """Return the newest n sets (oldest first) and the measured rate."""
-        with self.lock:
-            n = min(n, self.filled)
-            idx = (self.write_pos - n + np.arange(n)) % self.size
-            data = self.ring[idx].astype(float)
-            rate = 0.0
-            if len(self.arrivals) > 1:
-                span = self.arrivals[-1][0] - self.arrivals[0][0]
-                rate = sum(c for _, c in list(self.arrivals)[1:]) / span
-        return data, rate
-
-
 
 
 class UsbStreamReader(threading.Thread):
@@ -225,25 +141,19 @@ def envelope(signal, bins):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--wifi", metavar="HOST", nargs="?", const="esp32-mics.local",
-                        help="use the Wi-Fi stream (firmware env esp32_wifi) instead of USB")
     parser.add_argument("--port", default="/dev/ttyUSB0")
     parser.add_argument("--avg", type=int, default=8,
-                        help="USB: ADC readings averaged per sample, 6..64 (8 -> 5.5 kHz per mic)")
+                        help="ADC readings averaged per sample, 6..64 (8 -> 5.5 kHz per mic)")
     parser.add_argument("--range", type=int, default=2048,
                         help="waveform y-axis half-range in ADC counts")
     parser.add_argument("--window", type=float, default=WINDOW_SECONDS, help="seconds of history shown")
     args = parser.parse_args()
     window_s = args.window
 
-    if args.wifi:
-        reader = StreamReader(args.wifi)
-        nominal = NOMINAL_RATE
-    else:
-        if not 6 <= args.avg <= 64:
-            parser.error("--avg must be 6..64 (below 6 the serial port can't keep up)")
-        reader = UsbStreamReader(args.port, args.avg, window_s)
-        nominal = ESP_RATE / args.avg
+    if not 6 <= args.avg <= 64:
+        parser.error("--avg must be 6..64 (below 6 the serial port can't keep up)")
+    reader = UsbStreamReader(args.port, args.avg, window_s)
+    nominal = ESP_RATE / args.avg
     reader.start()
 
     fig = plt.figure(figsize=(12, 9))
@@ -281,8 +191,7 @@ def main():
     def update(_):
         data, rate = reader.snapshot(n_window)
         if len(data) < 100:
-            if not args.wifi:
-                status_text.set_text(reader.status(rate))
+            status_text.set_text(reader.status(rate))
             return [status_text]
 
         centred = data - data.mean(axis=0)   # remove each mic's ~1.6 V bias
@@ -304,14 +213,7 @@ def main():
             level_bars[m].set_height(max(db, -60) + 60)
             level_texts[m].set_text(f"{db:5.1f} dB")
 
-        if args.wifi:
-            link_kbs = rate * (FRAME_BYTES / FRAME_SETS) / 1000
-            status_text.set_text(
-                f"sample rate: {rate:7.0f} Hz per mic  ({rate * NUM_MICS:6.0f} Hz total)   "
-                f"link: {link_kbs:5.1f} kB/s   "
-                f"lost frames: {reader.lost_frames}   ADC overflows: {reader.adc_overflows}")
-        else:
-            status_text.set_text(reader.status(rate))
+        status_text.set_text(reader.status(rate))
         return wave_lines + level_bars + level_texts + [status_text]
 
     _anim = FuncAnimation(fig, update, interval=40, blit=False, cache_frame_data=False)
@@ -319,13 +221,11 @@ def main():
     try:
         plt.show()
     finally:
-        if not args.wifi:
-            reader.stop_stream()
+        reader.stop_stream()
         try:   # one line in docs/experiment_log.md (no data, just that it ran and how well)
             from lablog import append
             _, rate = reader.snapshot(1)
-            link = (f"USB, average of {args.avg} -> {rate:.0f} Hz per mic, gaps {reader.gaps}"
-                    if not args.wifi else f"Wi-Fi {args.wifi}, {rate:.0f} Hz, lost frames {reader.lost_frames}")
+            link = f"USB, average of {args.avg} -> {rate:.0f} Hz per mic, gaps {reader.gaps}"
             append("live mic viewer (mic_viewer.py)",
                    f"- open {time.monotonic() - t_open:.0f} s, window {window_s:g} s, {link}")
         except Exception:
