@@ -48,11 +48,11 @@ Tipikus felhasználási területei a sűrített levegő- és gázszivárgások f
 
 Az akusztikus kamera ugyanarra a fizikai elvre épül, mint ez a munka: a hang különböző időpontokban éri el az egyes mikrofonokat. Lényeges különbség, hogy a kamera a forrást a képsíkon, vagyis irányként jeleníti meg, távolságot nem mér. Ez összhangban van a 7. fejezet eredményével, amely szerint egy síkbeli mikrofon-rendszer az irányt sokkal megbízhatóbban határozza meg, mint a távolságot.
 
-Az 1. ábra a mikrofonok számának szerepét mutatja. 64 mikrofonnal egyetlen éles folt jelöli a szivárgást. 4 mikrofonnal a valódi forrás körül erős mellékcsúcsok is megjelennek. Négy mikrofonnal tehát egyetlen, domináns forrás iránya jól becsülhető, de több forrás szétválasztásához vagy részletes hangtérképhez nem elegendő.
+Az 1. ábra egy kézi akusztikus kamerát mutat. A bal oldali készülék elején a furatok mögött ülnek a mikrofonok, spirálkarok mentén elrendezve. A jobb oldali kijelzőn a mérés eredménye látszik: a hangtérkép egy alállomás videoképére vetítve jelöli a részkisülés helyét. A sok mikrofon és a nagy kiterjedés éles, kevés mellékcsúccsal terhelt hangtérképet ad, és több forrás egyidejű szétválasztását is lehetővé teszi. Négy mikrofonnal, mint ebben a munkában, ezzel szemben csak egyetlen, domináns forrás iránya becsülhető megbízhatóan.
 
-![Akusztikus kamera hangtérképe](img/akusztikus_kamera.png)
+![Kézi akusztikus kamera](img/akusztikus_kamera.png)
 
-*1. ábra. Szimulált illusztráció: egy 2 m-re lévő szivárgás (zöld kereszt, 4–12 kHz-es szélessávú hang) hangtérképe nyalábformálással, egy csőhálózat sematikus képére vetítve. (a) Az akusztikus kamerákra jellemző, 64 mikrofonos spirál elrendezés. (b) A jelen munka 30 cm-es, négymikrofonos elrendezése. A színskála a legerősebb ponthoz viszonyított teljesítmény, a −6 dB alatti részek nem látszanak.*
+*1. ábra. Teledyne FLIR Si2 sorozatú kézi akusztikus kamera: elöl a mikrofonokat takaró furatmező, hátul a kijelző a videoképre vetített hangtérképpel (forrás: Teledyne FLIR termékfotó).*
 
 ## 3. Hardver
 

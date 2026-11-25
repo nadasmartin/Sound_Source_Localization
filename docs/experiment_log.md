@@ -4561,3 +4561,7 @@ Done at the user's request. Nothing was moved; the user chose the groups to dele
   - These are comment-only firmware changes, so the fingerprint is now `89e9ca1f52c1`. The board was not connected: re-flash it.
 - **New `README.md`** at the root: overview, results in brief, layout, quick start, hardware, data.
 - **Remote:** `git@github.com:nadasmartin/Sound_Source_Localization.git`. It replaces the never-created `okos_lab_proj`.
+- (2026-11-25, later) At the user's request, figure 1 of the final report is now the user's screenshot of a Teledyne FLIR Si2-series handheld acoustic camera (product photo, source given in the caption) instead of the simulated sound map.
+  - The text paragraph about the figure is rewritten.
+  - `host/fig_acoustic_camera.py` is removed.
+  - The PDF is rebuilt (16 pages).

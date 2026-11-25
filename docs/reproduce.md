@@ -76,7 +76,6 @@ python series.py --series a10 --array 10 --rot 0 --channel left --temp T --note 
 python analyze_series.py                           # evaluate all series of the plan
 python live_app.py [--height 100] [--min-q 0.12] [--max-misfit 10] [--demo]   # live demo: laptop http://localhost:8766/, phone :8765
 python fig_measurement_points.py                   # 3D figure of the measured points for docs/final_report
-python fig_acoustic_camera.py                      # acoustic-camera illustration (figure 1 of docs/final_report)
 ```
 
 Phone: open `http://192.168.1.76:8765/` and tap "Tap to start audio". After a laptop restart the page reconnects by itself (from 2026-11-16 20:05). If Safari was in the background, reload the page and tap again.
